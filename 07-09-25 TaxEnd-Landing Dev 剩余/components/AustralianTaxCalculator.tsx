@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { Calculator, DollarSign, FileText, TrendingUp, Info, Globe, Users } from 'lucide-react';
 

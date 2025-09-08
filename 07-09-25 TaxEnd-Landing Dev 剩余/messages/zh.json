@@ -1,0 +1,47 @@
+{
+  "nav": {
+    "home": "首页",
+    "features": "功能特点",
+    "calculator": "税务计算器",
+    "pricing": "价格方案",
+    "contact": "联系我们",
+    "getStarted": "开始使用",
+    "startCalculating": "开始计算"
+  },
+  "hero": {
+    "title": "澳洲智能税务解决方案",
+    "subtitle": "数千用户信赖的AI驱动税务管理平台",
+    "cta": "免费试用",
+    "demo": "查看演示"
+  },
+  "features": {
+    "title": "为什么选择 TaxEnd.AI",
+    "subtitle": "专为澳洲税务需求设计的全面功能",
+    "realtime": {
+      "title": "实时计算",
+      "desc": "使用2024-25澳洲税率即时计算税务"
+    },
+    "multilang": {
+      "title": "多语言支持",
+      "desc": "为多元文化澳洲提供中英文支持"
+    },
+    "compliant": {
+      "title": "100% ATO合规",
+      "desc": "始终与最新澳洲税务法规保持同步"
+    }
+  },
+  "calculator": {
+    "title": "澳洲税务计算器",
+    "income": "年收入",
+    "calculate": "计算税额",
+    "results": "您的税务结果",
+    "cta": "立即计算"
+  },
+  "footer": {
+    "company": "公司",
+    "about": "关于我们",
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "copyright": "© 2024 TaxEnd.AI. 保留所有权利。"
+  }
+}
