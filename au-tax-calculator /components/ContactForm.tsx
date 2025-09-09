@@ -1,52 +1,6 @@
-'use client'
-
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Mail, Phone, MapPin, Send } from 'lucide-react'
-
-type FormData = {
-  name: string
-  email: string
-  message: string
-}
+import { Mail, Phone, MapPin } from 'lucide-react'
 
 export default function ContactForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<FormData>()
-
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true)
-    setSubmitStatus('idle')
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-
-      if (response.ok) {
-        setSubmitStatus('success')
-        reset()
-      } else {
-        setSubmitStatus('error')
-      }
-    } catch (error) {
-      setSubmitStatus('error')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   return (
     <section id="contact" className="py-20 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
@@ -107,7 +61,7 @@ export default function ContactForm() {
                 Our tax calculator is designed to be user-friendly, but if you need assistance, don't hesitate to reach out.
               </p>
               <a 
-                href="/calculator"
+                href="/en"
                 className="inline-flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700"
               >
                 Try Calculator Now →
@@ -115,93 +69,40 @@ export default function ContactForm() {
             </div>
           </div>
 
-          {/* Contact Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-xl shadow-lg p-8">
-            <div className="mb-6">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
-              </label>
-              <input
-                {...register('name', { required: 'Name is required' })}
-                type="text"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                placeholder="Your full name"
-              />
-              {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-              )}
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                {...register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address'
-                  }
-                })}
-                type="email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                placeholder="your.email@example.com"
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div className="mb-6">
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                Message *
-              </label>
-              <textarea
-                {...register('message', { required: 'Message is required' })}
-                rows={5}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
-                placeholder="Tell us how we can help you..."
-              />
-              {errors.message && (
-                <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  Send Message
-                </>
-              )}
-            </button>
-
-            {submitStatus === 'success' && (
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800 text-center">
-                  Thank you! Your message has been sent successfully.
+          {/* Contact Message */}
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-6">
+              We're Here to Help
+            </h3>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                Our Australian tax calculator provides accurate calculations for the 2024-25 financial year, including:
+              </p>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                  Income tax calculations
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                  Medicare levy
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                  Superannuation calculations
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                  Multi-language support (25 languages)
+                </li>
+              </ul>
+              <div className="mt-6 p-4 bg-indigo-50 rounded-lg">
+                <p className="text-indigo-800 font-medium">
+                  Contact form functionality will be available soon. For now, please reach out via email or phone.
                 </p>
               </div>
-            )}
-
-            {submitStatus === 'error' && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 text-center">
-                  Something went wrong. Please try again or email us directly.
-                </p>
-              </div>
-            )}
-          </form>
+            </div>
+          </div>
         </div>
       </div>
     </section>
