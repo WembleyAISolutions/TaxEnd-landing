@@ -32,10 +32,66 @@
   },
   "calculator": {
     "title": "澳洲税务计算器",
-    "income": "年收入",
-    "calculate": "计算税额",
+    "subtitle": "澳洲个人所得税计算器 2024-25",
+    "income": "收入",
+    "deductions": "扣除项目",
+    "superannuation": "养老金",
+    "taxCalculation": "税务计算",
+    "personalInfo": "个人信息",
     "results": "您的税务结果",
-    "cta": "立即计算"
+    "calculate": "计算税额",
+    "cta": "立即计算",
+    "totalIncome": "总收入",
+    "totalDeductions": "总扣除额",
+    "taxableIncome": "应税收入",
+    "incomeTax": "所得税",
+    "totalTax": "总税额",
+    "takeHomePay": "税后收入",
+    "effectiveRate": "有效税率",
+    "marginalRate": "边际税率",
+    "employerSuper": "雇主养老金",
+    "residencyStatus": {
+      "resident": "澳洲税务居民",
+      "nonResident": "非税务居民",
+      "workingHoliday": "打工度假签证持有者"
+    },
+    "incomeTypes": {
+      "salary": "工资薪金",
+      "investment": "投资收入",
+      "rental": "租金收入",
+      "capitalGains": "资本利得",
+      "foreignIncome": "海外收入",
+      "other": "其他收入"
+    },
+    "deductionTypes": {
+      "workExpenses": "工作相关费用",
+      "investmentExpenses": "投资费用",
+      "donations": "慈善捐款",
+      "other": "其他扣除"
+    },
+    "personalDetails": {
+      "privateHealth": "私人医疗保险",
+      "hecsDebt": "HECS-HELP债务",
+      "spouseIncome": "配偶收入（可选）",
+      "dependents": "受抚养人数"
+    },
+    "superDetails": {
+      "personalDeductible": "个人可扣除供款",
+      "selfEmployed": "自雇人士（无雇主养老金）",
+      "employerContribution": "雇主供款 (11%)",
+      "mandatoryContribution": "2024-25年度强制雇主供款"
+    },
+    "taxComponents": {
+      "medicareLevy": "医疗保险税 (2%)",
+      "medicareLevySurcharge": "医疗保险税附加费",
+      "hecsRepayment": "HECS-HELP还款"
+    },
+    "disclaimer": "此计算器基于2024-25澳洲税率提供估算。结果仅供参考。如需准确建议，请咨询税务专业人士。",
+    "validation": {
+      "required": "此字段为必填项",
+      "invalidNumber": "请输入有效数字",
+      "negativeNumber": "数值不能为负数"
+    }
   },
   "footer": {
     "company": "公司",

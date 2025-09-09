@@ -1,3 +1,8 @@
+const withNextIntl = require('next-intl/plugin')(
+  // This is the default location for the i18n config
+  './next-intl.config.js'
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -8,10 +13,6 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   swcMinify: true,
-  i18n: {
-    locales: ['en', 'zh'],
-    defaultLocale: 'en',
-  },
 }
 
-module.exports = nextConfig
+module.exports = withNextIntl(nextConfig)

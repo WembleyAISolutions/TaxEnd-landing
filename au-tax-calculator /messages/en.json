@@ -32,10 +32,66 @@
   },
   "calculator": {
     "title": "Australian Tax Calculator",
-    "income": "Annual Income",
-    "calculate": "Calculate Tax",
+    "subtitle": "Australian Personal Income Tax Calculator 2024-25",
+    "income": "Income",
+    "deductions": "Deductions",
+    "superannuation": "Superannuation",
+    "taxCalculation": "Tax Calculation",
+    "personalInfo": "Personal Information",
     "results": "Your Tax Results",
-    "cta": "Calculate Now"
+    "calculate": "Calculate Tax",
+    "cta": "Calculate Now",
+    "totalIncome": "Total Income",
+    "totalDeductions": "Total Deductions",
+    "taxableIncome": "Taxable Income",
+    "incomeTax": "Income Tax",
+    "totalTax": "Total Tax",
+    "takeHomePay": "Take-home Pay",
+    "effectiveRate": "Effective Rate",
+    "marginalRate": "Marginal Rate",
+    "employerSuper": "Employer Super",
+    "residencyStatus": {
+      "resident": "Australian Tax Resident",
+      "nonResident": "Non-resident",
+      "workingHoliday": "Working Holiday Maker"
+    },
+    "incomeTypes": {
+      "salary": "Salary & Wages",
+      "investment": "Investment Income",
+      "rental": "Rental Income",
+      "capitalGains": "Capital Gains",
+      "foreignIncome": "Foreign Income",
+      "other": "Other Income"
+    },
+    "deductionTypes": {
+      "workExpenses": "Work-related Expenses",
+      "investmentExpenses": "Investment Expenses",
+      "donations": "Charitable Donations",
+      "other": "Other Deductions"
+    },
+    "personalDetails": {
+      "privateHealth": "Private Health Insurance",
+      "hecsDebt": "HECS-HELP Debt",
+      "spouseIncome": "Spouse Income (optional)",
+      "dependents": "Number of Dependents"
+    },
+    "superDetails": {
+      "personalDeductible": "Personal Deductible Contributions",
+      "selfEmployed": "Self-employed (no employer super)",
+      "employerContribution": "Employer Super (11%)",
+      "mandatoryContribution": "Mandatory employer contribution for 2024-25"
+    },
+    "taxComponents": {
+      "medicareLevy": "Medicare Levy (2%)",
+      "medicareLevySurcharge": "Medicare Levy Surcharge",
+      "hecsRepayment": "HECS-HELP Repayment"
+    },
+    "disclaimer": "This calculator provides estimates based on 2024-25 Australian tax rates. Results are indicative only. Consult a tax professional for accurate advice.",
+    "validation": {
+      "required": "This field is required",
+      "invalidNumber": "Please enter a valid number",
+      "negativeNumber": "Value cannot be negative"
+    }
   },
   "footer": {
     "company": "Company",

@@ -2,18 +2,20 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Calculator, Menu, X, Globe } from 'lucide-react'
+import { Calculator, Menu, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
-  const [language, setLanguage] = useState('en')
+  const t = useTranslations('nav')
 
   const navItems = [
-    { href: '/', label: language === 'en' ? 'Home' : '首页' },
-    { href: '/calculator', label: language === 'en' ? 'Calculator' : '计算器' },
-    { href: '/features', label: language === 'en' ? 'Features' : '功能' },
-    { href: '/pricing', label: language === 'en' ? 'Pricing' : '价格' },
-    { href: '#contact', label: language === 'en' ? 'Contact' : '联系' },
+    { href: '/', label: t('home') },
+    { href: '/calculator', label: t('calculator') },
+    { href: '/features', label: t('features') },
+    { href: '/pricing', label: t('pricing') },
+    { href: '#contact', label: t('contact') },
   ]
 
   return (
@@ -41,24 +43,14 @@ export default function Navigation() {
             ))}
             
             {/* Language Selector */}
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4 text-gray-500" />
-              <select 
-                value={language} 
-                onChange={(e) => setLanguage(e.target.value)}
-                className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="en">EN</option>
-                <option value="zh">中文</option>
-              </select>
-            </div>
+            <LanguageSwitcher />
 
             {/* CTA Button */}
             <Link
               href="/calculator"
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
-              {language === 'en' ? 'Start Calculating' : '开始计算'}
+              {t('startCalculating')}
             </Link>
           </div>
 
@@ -89,16 +81,8 @@ export default function Navigation() {
               ))}
               
               {/* Mobile Language Selector */}
-              <div className="flex items-center gap-2 px-3 py-2">
-                <Globe className="w-4 h-4 text-gray-500" />
-                <select 
-                  value={language} 
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="en">English</option>
-                  <option value="zh">中文</option>
-                </select>
+              <div className="px-3 py-2">
+                <LanguageSwitcher />
               </div>
               
               {/* Mobile CTA Button */}
@@ -107,7 +91,7 @@ export default function Navigation() {
                 className="block mx-3 mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors text-center"
                 onClick={() => setIsOpen(false)}
               >
-                {language === 'en' ? 'Start Calculating' : '开始计算'}
+                {t('startCalculating')}
               </Link>
             </div>
           </div>
