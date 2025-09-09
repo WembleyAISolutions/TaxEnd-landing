@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend only when API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export async function POST(request: Request) {
   try {
     const { name, email, message } = await request.json()
+
+    if (!resend) {
+      return NextResponse.json(
+        { success: false, error: 'Email service not configured' },
+        { status: 500 }
+      )
+    }
 
     const data = await resend.emails.send({
       from: process.env.CONTACT_FROM || 'TaxEnd.AI <noreply@taxend.ai>',
