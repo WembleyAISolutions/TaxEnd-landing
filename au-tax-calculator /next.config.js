@@ -1,6 +1,6 @@
 const withNextIntl = require('next-intl/plugin')(
   // This is the default location for the i18n config
-  './next-intl.config.js'
+  './i18n.ts'
 );
 
 /** @type {import('next').NextConfig} */

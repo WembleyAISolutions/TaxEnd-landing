@@ -43,6 +43,46 @@ export default function EnhancedTaxCalculator() {
     sellingCosts: '',
     assetType: 'shares' // shares, property, other
   })
+
+  // Negative Gearing Calculator state
+  const [negativeGearingData, setNegativeGearingData] = useState({
+    // Property Details
+    propertyValue: '',
+    purchasePrice: '',
+    purchaseDate: '',
+    propertyType: 'house', // house, unit, townhouse
+    
+    // Rental Income
+    weeklyRent: '',
+    vacancyWeeks: '2',
+    otherRentalIncome: '',
+    
+    // Loan Details
+    loanAmount: '',
+    interestRate: '6.5',
+    loanType: 'interest-only', // interest-only, principal-interest
+    
+    // Property Expenses
+    councilRates: '',
+    waterRates: '',
+    landTax: '',
+    insurance: '',
+    propertyManagement: '',
+    repairs: '',
+    maintenance: '',
+    advertising: '',
+    legalFees: '',
+    accountingFees: '',
+    otherExpenses: '',
+    
+    // Depreciation
+    buildingDepreciation: '',
+    fixturesDepreciation: '',
+    
+    // Personal Tax Info
+    personalTaxableIncome: '',
+    marginalTaxRate: '32.5'
+  })
   
   // Income inputs
   const [income, setIncome] = useState({
@@ -256,6 +296,123 @@ export default function EnhancedTaxCalculator() {
 
   const cgtResults = calculateCGT()
 
+  // Negative Gearing Calculation Functions
+  const calculateNegativeGearing = () => {
+    // Rental Income Calculations
+    const weeklyRent = parseFloat(negativeGearingData.weeklyRent) || 0
+    const vacancyWeeks = parseFloat(negativeGearingData.vacancyWeeks) || 0
+    const otherRentalIncome = parseFloat(negativeGearingData.otherRentalIncome) || 0
+    
+    const annualRentalIncome = (weeklyRent * (52 - vacancyWeeks)) + otherRentalIncome
+    
+    // Loan Interest Calculations
+    const loanAmount = parseFloat(negativeGearingData.loanAmount) || 0
+    const interestRate = parseFloat(negativeGearingData.interestRate) || 0
+    const annualInterest = loanAmount * (interestRate / 100)
+    
+    // Property Expenses
+    const councilRates = parseFloat(negativeGearingData.councilRates) || 0
+    const waterRates = parseFloat(negativeGearingData.waterRates) || 0
+    const landTax = parseFloat(negativeGearingData.landTax) || 0
+    const insurance = parseFloat(negativeGearingData.insurance) || 0
+    const propertyManagement = parseFloat(negativeGearingData.propertyManagement) || 0
+    const repairs = parseFloat(negativeGearingData.repairs) || 0
+    const maintenance = parseFloat(negativeGearingData.maintenance) || 0
+    const advertising = parseFloat(negativeGearingData.advertising) || 0
+    const legalFees = parseFloat(negativeGearingData.legalFees) || 0
+    const accountingFees = parseFloat(negativeGearingData.accountingFees) || 0
+    const otherExpenses = parseFloat(negativeGearingData.otherExpenses) || 0
+    
+    const totalPropertyExpenses = councilRates + waterRates + landTax + insurance + 
+      propertyManagement + repairs + maintenance + advertising + legalFees + 
+      accountingFees + otherExpenses
+    
+    // Depreciation
+    const buildingDepreciation = parseFloat(negativeGearingData.buildingDepreciation) || 0
+    const fixturesDepreciation = parseFloat(negativeGearingData.fixturesDepreciation) || 0
+    const totalDepreciation = buildingDepreciation + fixturesDepreciation
+    
+    // Total Deductions
+    const totalDeductions = annualInterest + totalPropertyExpenses + totalDepreciation
+    
+    // Net Rental Income/Loss
+    const netRentalResult = annualRentalIncome - totalDeductions
+    const isNegativelyGeared = netRentalResult < 0
+    const rentalLoss = isNegativelyGeared ? Math.abs(netRentalResult) : 0
+    
+    // Tax Benefits
+    const personalTaxableIncome = parseFloat(negativeGearingData.personalTaxableIncome) || 0
+    const marginalTaxRate = parseFloat(negativeGearingData.marginalTaxRate) || 0
+    
+    const taxSavings = rentalLoss * (marginalTaxRate / 100)
+    const afterTaxLoss = rentalLoss - taxSavings
+    
+    // Cash Flow Analysis
+    const monthlyRent = weeklyRent * 52 / 12
+    const monthlyInterest = annualInterest / 12
+    const monthlyExpenses = totalPropertyExpenses / 12
+    const monthlyDepreciation = totalDepreciation / 12
+    
+    const monthlyCashFlow = monthlyRent - monthlyInterest - monthlyExpenses
+    const monthlyAfterTaxCashFlow = monthlyCashFlow + (taxSavings / 12)
+    
+    // Property Investment Metrics
+    const propertyValue = parseFloat(negativeGearingData.propertyValue) || 0
+    const grossYield = propertyValue > 0 ? (annualRentalIncome / propertyValue) * 100 : 0
+    const netYield = propertyValue > 0 ? (netRentalResult / propertyValue) * 100 : 0
+    
+    return {
+      // Income
+      annualRentalIncome,
+      weeklyRent,
+      vacancyWeeks,
+      otherRentalIncome,
+      
+      // Expenses
+      annualInterest,
+      totalPropertyExpenses,
+      totalDepreciation,
+      totalDeductions,
+      
+      // Results
+      netRentalResult,
+      isNegativelyGeared,
+      rentalLoss,
+      taxSavings,
+      afterTaxLoss,
+      
+      // Cash Flow
+      monthlyRent,
+      monthlyInterest,
+      monthlyExpenses,
+      monthlyDepreciation,
+      monthlyCashFlow,
+      monthlyAfterTaxCashFlow,
+      
+      // Metrics
+      propertyValue,
+      grossYield,
+      netYield,
+      
+      // Individual expenses for breakdown
+      councilRates,
+      waterRates,
+      landTax,
+      insurance,
+      propertyManagement,
+      repairs,
+      maintenance,
+      advertising,
+      legalFees,
+      accountingFees,
+      otherExpenses,
+      buildingDepreciation,
+      fixturesDepreciation
+    }
+  }
+
+  const negativeGearingResults = calculateNegativeGearing()
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
@@ -286,6 +443,15 @@ export default function EnhancedTaxCalculator() {
     } else {
       const numericValue = value.replace(/[^0-9.]/g, '')
       setCgtData(prev => ({ ...prev, [field]: numericValue }))
+    }
+  }
+
+  const handleNegativeGearingChange = (field: keyof typeof negativeGearingData, value: string) => {
+    if (field === 'purchaseDate' || field === 'propertyType' || field === 'loanType') {
+      setNegativeGearingData(prev => ({ ...prev, [field]: value }))
+    } else {
+      const numericValue = value.replace(/[^0-9.]/g, '')
+      setNegativeGearingData(prev => ({ ...prev, [field]: numericValue }))
     }
   }
 
@@ -339,6 +505,17 @@ export default function EnhancedTaxCalculator() {
             >
               <PieChart className="w-4 h-4" />
               CGT Calculator
+            </button>
+            <button
+              onClick={() => setActiveTab('negative-gearing')}
+              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'negative-gearing'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-600 hover:text-indigo-600'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              Negative Gearing
             </button>
           </div>
         </div>
@@ -671,6 +848,448 @@ export default function EnhancedTaxCalculator() {
               </div>
             </div>
           </div>
+          </div>
+        )}
+
+        {/* Negative Gearing Calculator Tab */}
+        {activeTab === 'negative-gearing' && (
+          <div className="grid lg:grid-cols-5 gap-6">
+            {/* Property & Loan Details */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-semibold">Property Details</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Property Type
+                  </label>
+                  <select
+                    value={negativeGearingData.propertyType}
+                    onChange={(e) => handleNegativeGearingChange('propertyType', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="house">House</option>
+                    <option value="unit">Unit/Apartment</option>
+                    <option value="townhouse">Townhouse</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Property Value
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.propertyValue)}
+                    onChange={(e) => handleNegativeGearingChange('propertyValue', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={negativeGearingData.purchaseDate}
+                    onChange={(e) => handleNegativeGearingChange('purchaseDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div className="pt-4 border-t">
+                  <h3 className="font-medium text-gray-800 mb-3">Loan Details</h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Loan Amount
+                      </label>
+                      <input
+                        type="text"
+                        value={formatNumber(negativeGearingData.loanAmount)}
+                        onChange={(e) => handleNegativeGearingChange('loanAmount', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="0"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Interest Rate (%)
+                      </label>
+                      <input
+                        type="text"
+                        value={negativeGearingData.interestRate}
+                        onChange={(e) => handleNegativeGearingChange('interestRate', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="6.5"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Loan Type
+                      </label>
+                      <select
+                        value={negativeGearingData.loanType}
+                        onChange={(e) => handleNegativeGearingChange('loanType', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="interest-only">Interest Only</option>
+                        <option value="principal-interest">Principal & Interest</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Rental Income */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign className="w-5 h-5 text-green-600" />
+                <h2 className="text-xl font-semibold">Rental Income</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Weekly Rent
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.weeklyRent)}
+                    onChange={(e) => handleNegativeGearingChange('weeklyRent', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Vacancy Weeks per Year
+                  </label>
+                  <input
+                    type="text"
+                    value={negativeGearingData.vacancyWeeks}
+                    onChange={(e) => handleNegativeGearingChange('vacancyWeeks', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="2"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Other Rental Income
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.otherRentalIncome)}
+                    onChange={(e) => handleNegativeGearingChange('otherRentalIncome', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div className="p-3 bg-green-50 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    <strong>Annual Rental Income:</strong> {formatCurrency(negativeGearingResults.annualRentalIncome)}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Monthly: {formatCurrency(negativeGearingResults.monthlyRent)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Expenses */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-orange-600" />
+                <h2 className="text-xl font-semibold">Property Expenses</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Council Rates
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.councilRates)}
+                    onChange={(e) => handleNegativeGearingChange('councilRates', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Water Rates
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.waterRates)}
+                    onChange={(e) => handleNegativeGearingChange('waterRates', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Land Tax
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.landTax)}
+                    onChange={(e) => handleNegativeGearingChange('landTax', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Insurance
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.insurance)}
+                    onChange={(e) => handleNegativeGearingChange('insurance', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Property Management
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.propertyManagement)}
+                    onChange={(e) => handleNegativeGearingChange('propertyManagement', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Repairs & Maintenance
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.repairs)}
+                    onChange={(e) => handleNegativeGearingChange('repairs', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Other Expenses
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.otherExpenses)}
+                    onChange={(e) => handleNegativeGearingChange('otherExpenses', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Depreciation & Tax Info */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-5 h-5 text-purple-600" />
+                <h2 className="text-xl font-semibold">Depreciation & Tax</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Building Depreciation
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.buildingDepreciation)}
+                    onChange={(e) => handleNegativeGearingChange('buildingDepreciation', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Fixtures & Fittings Depreciation
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(negativeGearingData.fixturesDepreciation)}
+                    onChange={(e) => handleNegativeGearingChange('fixturesDepreciation', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div className="pt-4 border-t">
+                  <h3 className="font-medium text-gray-800 mb-3">Personal Tax Information</h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Personal Taxable Income
+                      </label>
+                      <input
+                        type="text"
+                        value={formatNumber(negativeGearingData.personalTaxableIncome)}
+                        onChange={(e) => handleNegativeGearingChange('personalTaxableIncome', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="0"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Marginal Tax Rate (%)
+                      </label>
+                      <select
+                        value={negativeGearingData.marginalTaxRate}
+                        onChange={(e) => handleNegativeGearingChange('marginalTaxRate', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="0">0% (Tax-free threshold)</option>
+                        <option value="19">19% ($18,201 - $45,000)</option>
+                        <option value="32.5">32.5% ($45,001 - $120,000)</option>
+                        <option value="37">37% ($120,001 - $180,000)</option>
+                        <option value="45">45% ($180,001+)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Results & Analysis */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Calculator className="w-5 h-5 text-indigo-600" />
+                <h2 className="text-xl font-semibold">Investment Analysis</h2>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Income vs Expenses */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm text-gray-600">Annual Rental Income</span>
+                    <span className="font-medium text-green-600">{formatCurrency(negativeGearingResults.annualRentalIncome)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm text-gray-600">Interest Expense</span>
+                    <span className="font-medium text-red-600">-{formatCurrency(negativeGearingResults.annualInterest)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm text-gray-600">Property Expenses</span>
+                    <span className="font-medium text-red-600">-{formatCurrency(negativeGearingResults.totalPropertyExpenses)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm text-gray-600">Depreciation</span>
+                    <span className="font-medium text-red-600">-{formatCurrency(negativeGearingResults.totalDepreciation)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-2 border-b font-semibold">
+                    <span>Net Rental Result</span>
+                    <span className={negativeGearingResults.netRentalResult >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      {formatCurrency(negativeGearingResults.netRentalResult)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tax Benefits */}
+                {negativeGearingResults.isNegativelyGeared && (
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h3 className="font-medium text-blue-800 mb-2">Tax Benefits</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Rental Loss:</span>
+                        <span className="text-red-600">{formatCurrency(negativeGearingResults.rentalLoss)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Tax Savings:</span>
+                        <span className="text-green-600">{formatCurrency(negativeGearingResults.taxSavings)}</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>After-tax Loss:</span>
+                        <span className="text-red-600">{formatCurrency(negativeGearingResults.afterTaxLoss)}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cash Flow Analysis */}
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium text-gray-800 mb-2">Monthly Cash Flow</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Rental Income:</span>
+                      <span className="text-green-600">{formatCurrency(negativeGearingResults.monthlyRent)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Interest & Expenses:</span>
+                      <span className="text-red-600">-{formatCurrency(negativeGearingResults.monthlyInterest + negativeGearingResults.monthlyExpenses)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Pre-tax Cash Flow:</span>
+                      <span className={negativeGearingResults.monthlyCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        {formatCurrency(negativeGearingResults.monthlyCashFlow)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between font-medium">
+                      <span>After-tax Cash Flow:</span>
+                      <span className={negativeGearingResults.monthlyAfterTaxCashFlow >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        {formatCurrency(negativeGearingResults.monthlyAfterTaxCashFlow)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Investment Metrics */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center p-3 bg-purple-50 rounded">
+                    <div className="text-xs text-purple-600">Gross Yield</div>
+                    <div className="text-sm font-medium text-purple-800">{negativeGearingResults.grossYield.toFixed(2)}%</div>
+                  </div>
+                  <div className="text-center p-3 bg-purple-50 rounded">
+                    <div className="text-xs text-purple-600">Net Yield</div>
+                    <div className="text-sm font-medium text-purple-800">{negativeGearingResults.netYield.toFixed(2)}%</div>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-4 h-4 text-blue-600 mt-0.5" />
+                    <p className="text-xs text-blue-800">
+                      Negative gearing allows you to offset rental losses against other income. 
+                      This calculator provides estimates only. Consult a tax professional for advice.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

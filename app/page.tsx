@@ -1,6 +1,6 @@
 import Hero from '@/components/Hero';
 import Features from '@/components/Features';
-import Calculator from '@/components/Calculator';
+import EnhancedTaxCalculator from '@/components/EnhancedTaxCalculator';
 import Footer from '@/components/Footer';
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <main>
       <Hero />
       <Features />
-      <Calculator />
+      <EnhancedTaxCalculator />
       <Footer />
     </main>
   );

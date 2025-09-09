@@ -2,11 +2,17 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+import { notFound } from 'next/navigation'
+import { locales } from '../../i18n'
 import Navigation from '../../components/Navigation'
 import ErrorBoundary from '../../components/ErrorBoundary'
 import '../globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
 
 export const metadata: Metadata = {
   title: 'TaxEnd.AI - Smart Tax Solutions for Australian Business',
@@ -64,6 +70,11 @@ export default async function LocaleLayout({
   children: React.ReactNode
   params: { locale: string }
 }) {
+  // Validate that the incoming `locale` parameter is valid
+  if (!locales.includes(locale as any)) {
+    notFound()
+  }
+
   const messages = await getMessages({ locale })
 
   return (
