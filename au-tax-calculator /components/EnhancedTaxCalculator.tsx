@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Calculator, DollarSign, FileText, TrendingUp, Info, Users, Heart, GraduationCap } from 'lucide-react'
+import { Calculator, DollarSign, FileText, TrendingUp, Info, Users, Heart, GraduationCap, Calendar, PieChart, Clock } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface TaxBracket {
@@ -28,6 +28,21 @@ interface TaxResults {
 
 export default function EnhancedTaxCalculator() {
   const t = useTranslations('calculator')
+  
+  // Tab state
+  const [activeTab, setActiveTab] = useState('income-tax')
+  
+  // CGT Calculator state
+  const [cgtData, setCgtData] = useState({
+    purchaseDate: '',
+    saleDate: '',
+    purchasePrice: '',
+    salePrice: '',
+    purchaseCosts: '',
+    improvementCosts: '',
+    sellingCosts: '',
+    assetType: 'shares' // shares, property, other
+  })
   
   // Income inputs
   const [income, setIncome] = useState({
@@ -199,6 +214,48 @@ export default function EnhancedTaxCalculator() {
 
   const results = calculateTax()
 
+  // CGT Calculation Functions
+  const calculateCGT = () => {
+    const purchasePrice = parseFloat(cgtData.purchasePrice) || 0
+    const salePrice = parseFloat(cgtData.salePrice) || 0
+    const purchaseCosts = parseFloat(cgtData.purchaseCosts) || 0
+    const improvementCosts = parseFloat(cgtData.improvementCosts) || 0
+    const sellingCosts = parseFloat(cgtData.sellingCosts) || 0
+    
+    const totalCostBase = purchasePrice + purchaseCosts + improvementCosts
+    const netProceeds = salePrice - sellingCosts
+    const capitalGain = Math.max(0, netProceeds - totalCostBase)
+    
+    // Calculate holding period
+    const purchaseDate = new Date(cgtData.purchaseDate)
+    const saleDate = new Date(cgtData.saleDate)
+    const holdingPeriodDays = Math.floor((saleDate.getTime() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24))
+    const holdingPeriodMonths = holdingPeriodDays / 30.44 // Average days per month
+    const isEligibleForDiscount = holdingPeriodDays >= 365 && personalInfo.residencyStatus === 'resident'
+    
+    // Apply 50% CGT discount if eligible
+    const discountedGain = isEligibleForDiscount ? capitalGain * 0.5 : capitalGain
+    const discountAmount = isEligibleForDiscount ? capitalGain * 0.5 : 0
+    
+    return {
+      purchasePrice,
+      salePrice,
+      purchaseCosts,
+      improvementCosts,
+      sellingCosts,
+      totalCostBase,
+      netProceeds,
+      capitalGain,
+      discountedGain,
+      discountAmount,
+      holdingPeriodDays,
+      holdingPeriodMonths,
+      isEligibleForDiscount
+    }
+  }
+
+  const cgtResults = calculateCGT()
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
@@ -221,6 +278,15 @@ export default function EnhancedTaxCalculator() {
   const handleDeductionChange = (field: keyof typeof deductions, value: string) => {
     const numericValue = value.replace(/[^0-9.]/g, '')
     setDeductions(prev => ({ ...prev, [field]: numericValue }))
+  }
+
+  const handleCgtChange = (field: keyof typeof cgtData, value: string) => {
+    if (field === 'purchaseDate' || field === 'saleDate' || field === 'assetType') {
+      setCgtData(prev => ({ ...prev, [field]: value }))
+    } else {
+      const numericValue = value.replace(/[^0-9.]/g, '')
+      setCgtData(prev => ({ ...prev, [field]: numericValue }))
+    }
   }
 
   return (
@@ -249,7 +315,37 @@ export default function EnhancedTaxCalculator() {
           </div>
         </header>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        {/* Tab Navigation */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-1 flex">
+            <button
+              onClick={() => setActiveTab('income-tax')}
+              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'income-tax'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-600 hover:text-indigo-600'
+              }`}
+            >
+              <Calculator className="w-4 h-4" />
+              Income Tax Calculator
+            </button>
+            <button
+              onClick={() => setActiveTab('cgt')}
+              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'cgt'
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-600 hover:text-indigo-600'
+              }`}
+            >
+              <PieChart className="w-4 h-4" />
+              CGT Calculator
+            </button>
+          </div>
+        </div>
+
+        {/* Income Tax Calculator Tab */}
+        {activeTab === 'income-tax' && (
+          <div className="grid lg:grid-cols-4 gap-6">
           {/* Income Section */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -575,7 +671,252 @@ export default function EnhancedTaxCalculator() {
               </div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
+
+        {/* CGT Calculator Tab */}
+        {activeTab === 'cgt' && (
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Asset Details */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-semibold">Asset Details</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Asset Type
+                  </label>
+                  <select
+                    value={cgtData.assetType}
+                    onChange={(e) => handleCgtChange('assetType', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="shares">Shares</option>
+                    <option value="property">Property</option>
+                    <option value="other">Other Asset</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Purchase Date
+                  </label>
+                  <input
+                    type="date"
+                    value={cgtData.purchaseDate}
+                    onChange={(e) => handleCgtChange('purchaseDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sale Date
+                  </label>
+                  <input
+                    type="date"
+                    value={cgtData.saleDate}
+                    onChange={(e) => handleCgtChange('saleDate', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                {/* Holding Period Timeline */}
+                {cgtData.purchaseDate && cgtData.saleDate && (
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      <span className="font-medium text-blue-800">Holding Period</span>
+                    </div>
+                    <div className="text-sm text-blue-700">
+                      <p><strong>{Math.floor(cgtResults.holdingPeriodDays)} days</strong> ({cgtResults.holdingPeriodMonths.toFixed(1)} months)</p>
+                      {cgtResults.isEligibleForDiscount ? (
+                        <div className="flex items-center gap-1 mt-2 text-green-700">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <span className="font-medium">Eligible for 50% CGT discount</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 mt-2 text-orange-700">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          <span className="font-medium">Not eligible for CGT discount</span>
+                          <span className="text-xs">(Need 12+ months)</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Visual Timeline */}
+                    <div className="mt-3">
+                      <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                        <span>Purchase</span>
+                        <span>12 months</span>
+                        <span>Sale</span>
+                      </div>
+                      <div className="relative h-2 bg-gray-200 rounded-full">
+                        <div 
+                          className={`absolute left-0 top-0 h-full rounded-full ${
+                            cgtResults.isEligibleForDiscount ? 'bg-green-500' : 'bg-orange-500'
+                          }`}
+                          style={{ 
+                            width: `${Math.min(100, (cgtResults.holdingPeriodDays / 365) * 100)}%` 
+                          }}
+                        ></div>
+                        <div className="absolute left-1/3 top-0 w-0.5 h-full bg-gray-400"></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Financial Details */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign className="w-5 h-5 text-green-600" />
+                <h2 className="text-xl font-semibold">Financial Details</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Purchase Price
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(cgtData.purchasePrice)}
+                    onChange={(e) => handleCgtChange('purchasePrice', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sale Price
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(cgtData.salePrice)}
+                    onChange={(e) => handleCgtChange('salePrice', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Purchase Costs (stamp duty, legal fees)
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(cgtData.purchaseCosts)}
+                    onChange={(e) => handleCgtChange('purchaseCosts', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Improvement Costs
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(cgtData.improvementCosts)}
+                    onChange={(e) => handleCgtChange('improvementCosts', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Selling Costs (agent fees, legal fees)
+                  </label>
+                  <input
+                    type="text"
+                    value={formatNumber(cgtData.sellingCosts)}
+                    onChange={(e) => handleCgtChange('sellingCosts', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CGT Calculation Results */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <PieChart className="w-5 h-5 text-purple-600" />
+                <h2 className="text-xl font-semibold">CGT Calculation</h2>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2 border-b">
+                  <span className="text-sm text-gray-600">Sale Price</span>
+                  <span className="font-medium">{formatCurrency(cgtResults.salePrice)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-b">
+                  <span className="text-sm text-gray-600">Selling Costs</span>
+                  <span className="font-medium text-red-600">-{formatCurrency(cgtResults.sellingCosts)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-b">
+                  <span className="text-sm text-gray-600">Net Proceeds</span>
+                  <span className="font-medium">{formatCurrency(cgtResults.netProceeds)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-b">
+                  <span className="text-sm text-gray-600">Cost Base</span>
+                  <span className="font-medium text-red-600">-{formatCurrency(cgtResults.totalCostBase)}</span>
+                </div>
+                
+                <div className="flex justify-between items-center py-2 border-b font-semibold">
+                  <span>Capital Gain</span>
+                  <span className={cgtResults.capitalGain > 0 ? 'text-green-600' : 'text-red-600'}>
+                    {formatCurrency(cgtResults.capitalGain)}
+                  </span>
+                </div>
+                
+                {cgtResults.isEligibleForDiscount && cgtResults.discountAmount > 0 && (
+                  <div className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm text-gray-600">50% CGT Discount</span>
+                    <span className="font-medium text-green-600">-{formatCurrency(cgtResults.discountAmount)}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between items-center py-3 border-t font-bold text-lg">
+                  <span>Taxable Capital Gain</span>
+                  <span className={cgtResults.discountedGain > 0 ? 'text-purple-600' : 'text-gray-600'}>
+                    {formatCurrency(cgtResults.discountedGain)}
+                  </span>
+                </div>
+                
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <p className="text-sm text-purple-800">
+                    <strong>Add to Income:</strong> Include {formatCurrency(cgtResults.discountedGain)} in your taxable income
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">
+                    This amount will be taxed at your marginal tax rate
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Info className="w-4 h-4 text-blue-600 mt-0.5" />
+                  <p className="text-xs text-blue-800">
+                    CGT discount applies to Australian residents for assets held 12+ months. 
+                    Results are estimates only. Consult a tax professional for advice.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
