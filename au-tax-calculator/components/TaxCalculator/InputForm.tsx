@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Calculator, User, Heart, GraduationCap, Briefcase } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Calculator, User, Heart, GraduationCap, Briefcase, HelpCircle, DollarSign } from 'lucide-react';
 import type { TaxCalculationInput } from '../../lib/types/tax-types';
 
 interface InputFormProps {
@@ -16,6 +17,9 @@ interface InputFormProps {
 }
 
 export default function InputForm({ input, onChange, onCalculate, isCalculating = false }: InputFormProps) {
+  // Add a separate state to manage input display value
+  const [incomeInputValue, setIncomeInputValue] = useState<string>('');
+
   const handleInputChange = (field: keyof TaxCalculationInput, value: any) => {
     onChange({
       ...input,
@@ -43,18 +47,46 @@ export default function InputForm({ input, onChange, onCalculate, isCalculating 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="annualIncome">Annual Income *</Label>
-              <Input
-                id="annualIncome"
-                type="number"
-                value={input.annualIncome || ''}
-                onChange={(e) => handleNumberChange('annualIncome', e.target.value)}
-                placeholder="Enter your annual income"
-                className="text-lg"
-                min="0"
-                max="10000000"
-                step="1000"
-              />
+              <Label htmlFor="income" className="flex items-center gap-2">
+                Annual Income
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-3 w-3" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Your total gross annual income before tax</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="income"
+                  type="number"
+                  value={incomeInputValue}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setIncomeInputValue(value);
+                    handleInputChange('annualIncome', parseFloat(value) || 0);
+                  }}
+                  onFocus={(e) => {
+                    // When focused, if value is 0, clear the input
+                    if (e.target.value === '0') {
+                      setIncomeInputValue('');
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // When unfocused, if empty, set to 0
+                    if (e.target.value === '') {
+                      setIncomeInputValue('0');
+                    }
+                  }}
+                  className="pl-10"
+                  placeholder="85000"
+                />
+              </div>
             </div>
             
             <div className="space-y-2">
