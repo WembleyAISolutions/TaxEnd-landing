@@ -1,0 +1,130 @@
+{
+  "navigation": {
+    "home": "首页",
+    "features": "功能",
+    "calculator": "计算器",
+    "about": "关于",
+    "contact": "联系"
+  },
+  "hero": {
+    "title": "澳大利亚最先进的税务计算器",
+    "subtitle": "为每个澳大利亚人提供智能税务规划",
+    "description": "精确计算您的税务义务，分析税级攀升影响，并通过我们全面的税务工具套件优化您的财务策略。",
+    "cta": "开始计算",
+    "features": [
+      "2024-25税率",
+      "税级攀升分析",
+      "多年预测",
+      "ATO合规"
+    ]
+  },
+  "features": {
+    "title": "智能税务规划的强大功能",
+    "subtitle": "从基础税务计算到高级税级攀升分析，我们为每个澳大利亚纳税人提供全面服务",
+    "flagship": {
+      "title": "税级攀升分析器",
+      "subtitle": "旗舰功能",
+      "description": "澳大利亚最先进的税级攀升预测工具。准确了解通胀和工资增长如何在未来十年内将您推入更高的税级。",
+      "metrics": [
+        "每年节省高达 $5,000",
+        "预测10年税务影响",
+        "跟踪实际购买力",
+        "规划薪资谈判"
+      ],
+      "benefits": [
+        "确定最佳薪资牺牲金额",
+        "战略性安排重大购买时机",
+        "最大化退休金供款",
+        "规划职业发展时机"
+      ]
+    },
+    "calculators": {
+      "title": "完整计算器套件",
+      "subtitle": "全面税务规划所需的一切",
+      "income": {
+        "title": "所得税计算器",
+        "description": "全面的PAYG税务计算，包含所有扣除、抵免和医疗保险费。采用2024-25最新税率和HECS/HELP计算。",
+        "highlights": [
+          "2024-25最新税率",
+          "支持HECS/HELP计算",
+          "医疗保险费",
+          "所有扣除类型"
+        ]
+      },
+      "cgt": {
+        "title": "资本利得税计算器",
+        "description": "计算房产、股票和投资的资本利得税，具有50%折扣优化功能。智能持有期分析，包含小企业优惠。",
+        "highlights": [
+          "50%折扣优化",
+          "智能持有期分析",
+          "房产和股票",
+          "小企业减免"
+        ]
+      },
+      "negativeGearing": {
+        "title": "负扣税",
+        "description": "分析租赁房产投资，包含折旧和利息扣除。完整现金流分析，获得真实税后回报。",
+        "highlights": [
+          "投资房产优化",
+          "完整现金流分析",
+          "利息扣除",
+          "投资回报率计算"
+        ]
+      }
+    },
+    "additional": {
+      "title": "为什么选择TaxEnd.AI",
+      "subtitle": "为准确性而构建，为简单性而设计",
+      "compliance": {
+        "title": "100% ATO合规",
+        "description": "始终更新最新税法和税率"
+      },
+      "realtime": {
+        "title": "实时结果",
+        "description": "输入时即时计算，实时更新"
+      },
+      "accuracy": {
+        "title": "精确准确",
+        "description": "使用官方ATO公式，精确到分"
+      },
+      "planning": {
+        "title": "多年规划",
+        "description": "预测未来10年的税务情况"
+      }
+    },
+    "cta": {
+      "title": "准备优化您的税务策略？",
+      "description": "加入数千名已经通过TaxEnd.AI节省资金并进行更智能规划的澳大利亚人",
+      "features": [
+        "免费使用",
+        "无需注册",
+        "始终更新"
+      ]
+    }
+  },
+  "calculator": {
+    "title": "全面税务计算器套件",
+    "subtitle": "先进的税务规划工具，包括我们革命性的税级攀升分析器 - 了解您的税务状况如何随时间演变并优化您的财务策略",
+    "tabs": {
+      "bracketCreep": "税级攀升",
+      "income": "所得税",
+      "cgt": "资本利得",
+      "negativeGearing": "负扣税",
+      "regional": "地区税务"
+    },
+    "disclaimer": "所有计算均基于2024-25税率的估算。请咨询税务专业人士获取个性化建议。"
+  },
+  "common": {
+    "calculate": "计算",
+    "reset": "重置",
+    "export": "导出",
+    "loading": "加载中...",
+    "error": "发生错误",
+    "currency": "$",
+    "percentage": "%",
+    "year": "年",
+    "annual": "年度",
+    "monthly": "月度",
+    "weekly": "周度"
+  }
+}

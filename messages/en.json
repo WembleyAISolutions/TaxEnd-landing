@@ -1,0 +1,130 @@
+{
+  "navigation": {
+    "home": "Home",
+    "features": "Features",
+    "calculator": "Calculator",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Australia's Most Advanced Tax Calculator",
+    "subtitle": "Smart Tax Planning for Every Australian",
+    "description": "Calculate your tax obligations with precision, analyze bracket creep impact, and optimize your financial strategy with our comprehensive suite of tax tools.",
+    "cta": "Start Calculating",
+    "features": [
+      "2024-25 Tax Rates",
+      "Bracket Creep Analysis",
+      "Multi-Year Projections",
+      "ATO Compliant"
+    ]
+  },
+  "features": {
+    "title": "Powerful Features for Smart Tax Planning",
+    "subtitle": "From basic tax calculations to advanced bracket creep analysis, we've got every Australian taxpayer covered",
+    "flagship": {
+      "title": "Bracket Creep Analyzer",
+      "subtitle": "Flagship Feature",
+      "description": "Australia's most advanced bracket creep prediction tool. See exactly how inflation and wage growth will push you into higher tax brackets over the next decade.",
+      "metrics": [
+        "Save up to $5,000/year",
+        "Predict 10-year tax impact",
+        "Track real purchasing power",
+        "Plan salary negotiations"
+      ],
+      "benefits": [
+        "Identify optimal salary sacrifice amounts",
+        "Time major purchases strategically",
+        "Maximize superannuation contributions",
+        "Plan career progression timing"
+      ]
+    },
+    "calculators": {
+      "title": "Complete Calculator Suite",
+      "subtitle": "Everything you need for comprehensive tax planning",
+      "income": {
+        "title": "Income Tax Calculator",
+        "description": "Comprehensive PAYG tax calculations with all deductions, offsets, and Medicare levy. Features 2024-25 latest tax rates and HECS/HELP calculations.",
+        "highlights": [
+          "2024-25 latest rates",
+          "HECS/HELP support",
+          "Medicare levy",
+          "All deduction types"
+        ]
+      },
+      "cgt": {
+        "title": "CGT Calculator",
+        "description": "Calculate CGT on property, shares, and investments with 50% discount optimization. Smart holding period analysis with small business concessions.",
+        "highlights": [
+          "50% discount optimization",
+          "Smart holding analysis",
+          "Property & shares",
+          "Small business relief"
+        ]
+      },
+      "negativeGearing": {
+        "title": "Negative Gearing",
+        "description": "Analyze rental property investments with depreciation and interest deductions. Complete cash flow analysis for true after-tax returns.",
+        "highlights": [
+          "Investment property optimization",
+          "Complete cash flow analysis",
+          "Interest deductions",
+          "ROI calculations"
+        ]
+      }
+    },
+    "additional": {
+      "title": "Why Choose TaxEnd.AI",
+      "subtitle": "Built for accuracy, designed for simplicity",
+      "compliance": {
+        "title": "100% ATO Compliant",
+        "description": "Always updated with latest tax legislation and rates"
+      },
+      "realtime": {
+        "title": "Real-time Results",
+        "description": "Instant calculations as you type with live updates"
+      },
+      "accuracy": {
+        "title": "Precision Accuracy",
+        "description": "Down-to-the-cent accuracy using official ATO formulas"
+      },
+      "planning": {
+        "title": "Multi-Year Planning",
+        "description": "Project tax scenarios up to 10 years into the future"
+      }
+    },
+    "cta": {
+      "title": "Ready to Optimize Your Tax Strategy?",
+      "description": "Join thousands of Australians who are already saving money and planning smarter with TaxEnd.AI",
+      "features": [
+        "Free to use",
+        "No registration required",
+        "Always up-to-date"
+      ]
+    }
+  },
+  "calculator": {
+    "title": "Comprehensive Tax Calculator Suite",
+    "subtitle": "Advanced tax planning tools including our revolutionary Bracket Creep Analyzer - understand how your tax position evolves over time and optimize your financial strategy",
+    "tabs": {
+      "bracketCreep": "Bracket Creep",
+      "income": "Income Tax",
+      "cgt": "Capital Gains",
+      "negativeGearing": "Negative Gearing",
+      "regional": "Regional Tax"
+    },
+    "disclaimer": "All calculations are estimates based on 2024-25 tax rates. Consult a tax professional for personalized advice."
+  },
+  "common": {
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "export": "Export",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "currency": "$",
+    "percentage": "%",
+    "year": "Year",
+    "annual": "Annual",
+    "monthly": "Monthly",
+    "weekly": "Weekly"
+  }
+}

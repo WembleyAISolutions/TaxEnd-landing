@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, TrendingUp, Home, Zap } from 'lucide-react';
+import { Calculator, TrendingUp, Home, Zap, Globe } from 'lucide-react';
 import BracketCreepAnalyzer from './BracketCreepAnalyzer';
+import RegionalTaxCalculator from './RegionalTaxCalculator';
 
 // Simple Income Tax Calculator Component
 function IncomeTaxCalculator() {
@@ -383,7 +384,7 @@ export default function EnhancedTaxCalculator() {
         
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <Tabs defaultValue="bracket" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-100 p-1 rounded-none">
+            <TabsList className="grid w-full grid-cols-5 bg-gray-100 p-1 rounded-none">
               <TabsTrigger value="bracket" className="flex items-center gap-2">
                 <Zap className="h-4 w-4" />
                 Bracket Creep
@@ -399,6 +400,10 @@ export default function EnhancedTaxCalculator() {
               <TabsTrigger value="negative" className="flex items-center gap-2">
                 <Home className="h-4 w-4" />
                 Negative Gearing
+              </TabsTrigger>
+              <TabsTrigger value="regional" className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Regional Tax
               </TabsTrigger>
             </TabsList>
             
@@ -416,6 +421,10 @@ export default function EnhancedTaxCalculator() {
             
             <TabsContent value="negative" className="p-6">
               <NegativeGearingCalculator />
+            </TabsContent>
+            
+            <TabsContent value="regional" className="p-0">
+              <RegionalTaxCalculator />
             </TabsContent>
           </Tabs>
         </div>
