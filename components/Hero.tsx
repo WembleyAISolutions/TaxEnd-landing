@@ -14,10 +14,10 @@ export default function Hero() {
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-gray-700 hover:text-indigo-600">Features</a>
               <a href="#calculator" className="text-gray-700 hover:text-indigo-600">Calculator</a>
-              <a href="#pricing" className="text-gray-700 hover:text-indigo-600">Pricing</a>
-              <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+              <a href="/en/pricing" className="text-gray-700 hover:text-indigo-600">Pricing</a>
+              <a href="/en/signup" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                 Get Started
-              </button>
+              </a>
             </div>
           </div>
         </div>

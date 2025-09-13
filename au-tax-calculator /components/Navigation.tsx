@@ -3,18 +3,19 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { Calculator, Menu, X } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const t = useTranslations('nav')
+  const locale = useLocale()
 
   const navItems = [
-    { href: '/', label: t('home') },
-    { href: '/calculator', label: t('calculator') },
-    { href: '/features', label: t('features') },
-    { href: '/pricing', label: t('pricing') },
+    { href: `/${locale}`, label: t('home') },
+    { href: `/${locale}/calculator`, label: t('calculator') },
+    { href: `/${locale}/features`, label: t('features') },
+    { href: `/${locale}/pricing`, label: t('pricing') },
     { href: '#contact', label: t('contact') },
   ]
 
@@ -23,7 +24,7 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={`/${locale}`} className="flex items-center gap-2">
             <div className="p-2 bg-indigo-600 rounded-lg">
               <Calculator className="w-6 h-6 text-white" />
             </div>
@@ -47,7 +48,7 @@ export default function Navigation() {
 
             {/* CTA Button */}
             <Link
-              href="/calculator"
+              href={`/${locale}/calculator`}
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               {t('startCalculating')}
@@ -87,7 +88,7 @@ export default function Navigation() {
               
               {/* Mobile CTA Button */}
               <Link
-                href="/calculator"
+                href={`/${locale}/calculator`}
                 className="block mx-3 mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors text-center"
                 onClick={() => setIsOpen(false)}
               >
