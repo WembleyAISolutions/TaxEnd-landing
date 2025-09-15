@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Globe, MapPin, DollarSign, Calculator, TrendingUp, Home, Users } from 'lucide-react';
+import AustralianStatesTaxCalculator from './AustralianStatesTaxCalculator';
 
 // Australian State Tax Data
 const AUSTRALIAN_STATES = {
@@ -327,7 +328,7 @@ function NewZealandTaxCalculator() {
   const [kiwiSaverRate, setKiwiSaverRate] = useState(3);
   const [hasChildren, setHasChildren] = useState(false);
   const [numChildren, setNumChildren] = useState(1);
-  const [partnerIncome, setPartnerIncome] = useState(0);
+  const [partnerIncome, setPartnerIncome] = useState('');
   const [results, setResults] = useState<any>(null);
 
   const calculateNZTax = () => {
@@ -357,9 +358,10 @@ function NewZealandTaxCalculator() {
 
     // Working for Families (simplified)
     let wffCredit = 0;
-    if (hasChildren && income + partnerIncome < 100000) {
+    const partnerIncomeNum = Number(partnerIncome) || 0;
+    if (hasChildren && income + partnerIncomeNum < 100000) {
       const baseCredit = numChildren * 4368; // Family Tax Credit
-      const incomeTest = Math.max(0, (income + partnerIncome - 42700) * 0.25);
+      const incomeTest = Math.max(0, (income + partnerIncomeNum - 42700) * 0.25);
       wffCredit = Math.max(0, baseCredit - incomeTest);
     }
 
@@ -426,7 +428,7 @@ function NewZealandTaxCalculator() {
                 id="partner-income"
                 type="number"
                 value={partnerIncome}
-                onChange={(e) => setPartnerIncome(Number(e.target.value))}
+                onChange={(e) => setPartnerIncome(e.target.value)}
                 placeholder="Partner's annual income"
               />
             </div>
@@ -745,7 +747,7 @@ function MigrationTaxAnalyzer() {
   const calculateMigrationImpact = () => {
     let migrationTax = 0;
     let ongoingTaxDifference = 0;
-    let recommendations = [];
+    let recommendations: string[] = [];
 
     if (currentCountry === 'Australia' && targetCountry === 'New Zealand') {
       // Australia to NZ migration
@@ -979,7 +981,7 @@ export default function RegionalTaxCalculator() {
             </TabsList>
             
             <TabsContent value="au-states" className="p-6">
-              <AustralianStateCalculator />
+              <AustralianStatesTaxCalculator />
             </TabsContent>
             
             <TabsContent value="nz-tax" className="p-6">

@@ -1,6 +1,6 @@
 // lib/supabase-utils.ts
 import { supabase } from './supabase'
-import { User, SubscriptionPlan, UserSubscription, Payment, TaxReturn, UserUsage } from '../types/supabase'
+import { User, SubscriptionPlan, UserSubscription, Payment, TaxReturn, UserUsage } from '../app/types/supabase'
 
 export class SupabaseService {
   // User Management

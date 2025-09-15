@@ -4,9 +4,19 @@ import { buffer } from 'micro'
 import Stripe from 'stripe'
 import { supabase } from '../../../lib/supabase'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
-})
+// Extended interface for Stripe Invoice with additional properties
+interface ExtendedInvoice extends Stripe.Invoice {
+  subscription?: string | Stripe.Subscription;
+  payment_intent?: string | Stripe.PaymentIntent;
+}
+
+// Extended interface for Stripe Subscription with additional properties
+interface ExtendedSubscription extends Stripe.Subscription {
+  current_period_start: number;
+  current_period_end: number;
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -52,11 +62,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break
       
       case 'invoice.payment_succeeded':
-        await handlePaymentSucceeded(event.data.object as Stripe.Invoice)
+        await handlePaymentSucceeded(event.data.object as ExtendedInvoice)
         break
       
       case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.Invoice)
+        await handlePaymentFailed(event.data.object as ExtendedInvoice)
         break
       
       default:
@@ -130,8 +140,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
       stripe_subscription_id: subscription.id,
       status: subscription.status as any,
       billing_cycle: subscription.items.data[0]?.price.recurring?.interval === 'month' ? 'monthly' : 'yearly',
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+      current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
     } as any, {
       onConflict: 'stripe_subscription_id'
@@ -150,7 +160,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     .eq('stripe_subscription_id', subscription.id)
 }
 
-async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
+async function handlePaymentSucceeded(invoice: ExtendedInvoice) {
   console.log('Processing payment succeeded:', invoice.id)
   
   if (invoice.subscription) {
@@ -186,7 +196,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 }
 
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
+async function handlePaymentFailed(invoice: ExtendedInvoice) {
   console.log('Processing payment failed:', invoice.id)
   
   if (invoice.subscription) {

@@ -94,8 +94,9 @@ const TAX_BRACKETS_2024_25: TaxBracket[] = [
 const BRACKET_COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'];
 
 export default function BracketCreepAnalyzer() {
-  // State Management
+  // Safe State Management with proper initialization
   const [currentIncome, setCurrentIncome] = useState<number>(85000);
+  const [displayIncome, setDisplayIncome] = useState<string>('85,000');
   const [inflationRate, setInflationRate] = useState<number>(3.5);
   const [annualRaisePercent, setAnnualRaisePercent] = useState<number>(4);
   const [yearsToProject, setYearsToProject] = useState<number>(5);
@@ -103,6 +104,61 @@ export default function BracketCreepAnalyzer() {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState<boolean>(false);
   const [bonusAmount, setBonusAmount] = useState<number>(0);
   const [investmentIncome, setInvestmentIncome] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Safe state update wrapper
+  const safeSetState = useCallback((setter: Function, value: any) => {
+    try {
+      setter(value);
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
+      console.error('State update error:', err);
+    }
+  }, []);
+
+  // Safe number formatting function
+  const formatNumber = useCallback((value: string | number): string => {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+    
+    try {
+      const cleanValue = value.toString().replace(/[^\d]/g, '');
+      if (cleanValue === '') return '';
+      return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    } catch (error) {
+      console.error('Format number error:', error);
+      return value.toString();
+    }
+  }, []);
+
+  // Safe number parsing function
+  const parseNumber = useCallback((value: string | number): number => {
+    if (!value) return 0;
+    
+    try {
+      const cleanValue = value.toString().replace(/[^\d]/g, '');
+      return parseInt(cleanValue, 10) || 0;
+    } catch (error) {
+      console.error('Parse number error:', error);
+      return 0;
+    }
+  }, []);
+
+  // Helper function to get next bracket rate
+  const getNextBracketRate = useCallback((income: number): number => {
+    const currentBracketIndex = TAX_BRACKETS_2024_25.findIndex(b => 
+      income >= b.min && (b.max === null || income <= b.max)
+    );
+    
+    if (currentBracketIndex < TAX_BRACKETS_2024_25.length - 1) {
+      return TAX_BRACKETS_2024_25[currentBracketIndex + 1].rate * 100;
+    }
+    
+    return TAX_BRACKETS_2024_25[currentBracketIndex].rate * 100;
+  }, []);
 
   // Calculate tax for a given income
   const calculateTax = useCallback((income: number): number => {
@@ -253,20 +309,7 @@ export default function BracketCreepAnalyzer() {
       const priorityOrder = { high: 0, medium: 1, low: 2 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-  }, [currentBracketInfo, currentIncome, projections, superContribution]);
-
-  // Helper function to get next bracket rate
-  const getNextBracketRate = (income: number): number => {
-    const currentBracketIndex = TAX_BRACKETS_2024_25.findIndex(b => 
-      income >= b.min && (b.max === null || income <= b.max)
-    );
-    
-    if (currentBracketIndex < TAX_BRACKETS_2024_25.length - 1) {
-      return TAX_BRACKETS_2024_25[currentBracketIndex + 1].rate * 100;
-    }
-    
-    return TAX_BRACKETS_2024_25[currentBracketIndex].rate * 100;
-  };
+  }, [currentBracketInfo, currentIncome, projections, superContribution, getNextBracketRate]);
 
   return (
     <div className="space-y-6 p-4">
@@ -306,14 +349,73 @@ export default function BracketCreepAnalyzer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label htmlFor="income">Current Annual Income</Label>
-              <Input
-                id="income"
-                type="number"
-                value={currentIncome}
-                onChange={(e) => setCurrentIncome(Number(e.target.value))}
-                className="text-lg font-semibold"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                  $
+                </span>
+                <Input
+                  id="income"
+                  type="text"
+                  value={displayIncome}
+                  onChange={(e) => {
+                    try {
+                      const inputValue = e.target.value;
+                      
+                      if (inputValue === '') {
+                        safeSetState(setCurrentIncome, 0);
+                        safeSetState(setDisplayIncome, '');
+                        return;
+                      }
+
+                      const rawValue = parseNumber(inputValue);
+                      
+                      if (rawValue <= 9999999) {
+                        const rawString = rawValue.toString();
+                        const formattedValue = formatNumber(rawString);
+                        
+                        safeSetState(setCurrentIncome, rawValue);
+                        safeSetState(setDisplayIncome, formattedValue);
+                      }
+                    } catch (error) {
+                      console.error('Income input error:', error);
+                    }
+                  }}
+                  onFocus={(e) => {
+                    try {
+                      if (e.target && typeof e.target.select === 'function') {
+                        setTimeout(() => {
+                          e.target.select();
+                        }, 0);
+                      }
+                    } catch (error) {
+                      console.error('Focus error:', error);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    const allowedKeys = [
+                      'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 
+                      'ArrowUp', 'ArrowDown', 'Tab', 'Enter', 'Home', 'End'
+                    ];
+                    
+                    if (e.ctrlKey || e.metaKey) return;
+                    
+                    const isNumber = /^[0-9]$/.test(e.key);
+                    const isAllowedKey = allowedKeys.includes(e.key);
+                    
+                    if (!isNumber && !isAllowedKey) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="text-lg font-semibold pl-8 text-right font-mono"
+                  placeholder="Enter your salary"
+                />
+              </div>
               <span className="text-xs text-gray-500">Your gross annual salary</span>
+              {error && (
+                <div className="text-xs text-red-600 bg-red-50 p-2 rounded">
+                  Error: {error}
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
