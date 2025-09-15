@@ -170,23 +170,23 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('❌ === CHECKOUT API ERROR ===');
     console.error('Error type:', error?.constructor?.name);
-    console.error('Error message:', error?.message);
+    console.error('Error message:', (error as Error)?.message);
     
     // Log Stripe-specific error details
     if (error && typeof error === 'object' && 'type' in error) {
-      console.error('Stripe error type:', error.type);
-      console.error('Stripe error code:', error.code);
-      console.error('Stripe error param:', error.param);
-      console.error('Stripe error detail:', error.detail);
+      console.error('Stripe error type:', (error as any).type);
+      console.error('Stripe error code:', (error as any).code);
+      console.error('Stripe error param:', (error as any).param);
+      console.error('Stripe error detail:', (error as any).detail);
     }
     
     console.error('Full error object:', error);
-    console.error('Error stack:', error?.stack);
+    console.error('Error stack:', (error as Error)?.stack);
     
     // Return more detailed error information
-    const errorMessage = error?.message || 'Failed to create checkout session';
+    const errorMessage = (error as Error)?.message || 'Failed to create checkout session';
     const errorDetails = error && typeof error === 'object' && 'type' in error 
-      ? `Stripe Error: ${error.type} - ${error.message}`
+      ? `Stripe Error: ${(error as any).type} - ${(error as any).message}`
       : errorMessage;
     
     return NextResponse.json(

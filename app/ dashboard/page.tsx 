@@ -1,0 +1,17 @@
+// app/dashboard/page.tsx
+import { Metadata } from 'next';
+import TaxDashboard from './TaxDashboard';
+
+export const metadata: Metadata = {
+  title: 'Tax Dashboard - TaxEnd.ai',
+  description: '智能税务管理仪表板 - 实时计算，个性化建议，让税务变得简单',
+  keywords: ['税务计算', '个人所得税', '税务优化', 'Bracket Creep', '澳洲税务'],
+};
+
+export default function DashboardPage() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <TaxDashboard />
+    </main>
+  );
+}

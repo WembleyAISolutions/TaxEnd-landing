@@ -1,0 +1,631 @@
+// TaxDashboard.tsx
+'use client';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { 
+  DollarSign, 
+  TrendingUp, 
+  Calculator,
+  Target,
+  User,
+  Shield,
+  Sparkles,
+  ChevronRight,
+  Home,
+  FileText,
+  PiggyBank,
+  GraduationCap,
+  Briefcase,
+  Building,
+  Sunrise
+} from 'lucide-react';
+
+// Tax brackets for Australia 2024-25
+const TAX_BRACKETS = [
+  { min: 0, max: 18200, rate: 0, tax: 0 },
+  { min: 18201, max: 45000, rate: 0.19, tax: 0 },
+  { min: 45001, max: 120000, rate: 0.325, tax: 5092 },
+  { min: 120001, max: 180000, rate: 0.37, tax: 29467 },
+  { min: 180001, max: null, rate: 0.45, tax: 51667 }
+];
+
+interface UserProfile {
+  age: number;
+  income: number;
+  occupation: string;
+  hasHECS: boolean;
+  hasPrivateHealth: boolean;
+  workFromHome: boolean;
+  hasInvestmentProperty: boolean;
+}
+
+interface TaxCalculation {
+  taxableIncome: number;
+  tax: number;
+  afterTax: number;
+  effectiveRate: number;
+  marginalRate: number;
+  bracketName: string;
+  medicareLevyy: number;
+  totalDeductions: number;
+}
+
+export default function TaxDashboard() {
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    age: 28,
+    income: 75000,
+    occupation: 'office_worker',
+    hasHECS: true,
+    hasPrivateHealth: false,
+    workFromHome: true,
+    hasInvestmentProperty: false
+  });
+
+  const [selectedAgeGroup, setSelectedAgeGroup] = useState<string>('young');
+
+  // Determine age group
+  useEffect(() => {
+    if (userProfile.age <= 25) setSelectedAgeGroup('genz');
+    else if (userProfile.age <= 35) setSelectedAgeGroup('millennial');
+    else if (userProfile.age <= 45) setSelectedAgeGroup('genx');
+    else if (userProfile.age <= 55) setSelectedAgeGroup('boomer');
+    else setSelectedAgeGroup('senior');
+  }, [userProfile.age]);
+
+  // Calculate tax
+  const calculateTax = (income: number): number => {
+    const bracket = TAX_BRACKETS.find(b => 
+      income >= b.min && (b.max === null || income <= b.max)
+    );
+    
+    if (!bracket || bracket.rate === 0) return 0;
+    
+    return bracket.tax + (income - bracket.min + 1) * bracket.rate;
+  };
+
+  // Calculate complete tax position
+  const taxCalculation = useMemo((): TaxCalculation => {
+    let deductions = 0;
+    
+    // Work from home deduction
+    if (userProfile.workFromHome) {
+      deductions += 1000; // Simplified $1000 WFH deduction
+    }
+    
+    // Professional expenses
+    deductions += 500; // Basic professional expenses
+    
+    const taxableIncome = Math.max(0, userProfile.income - deductions);
+    const tax = calculateTax(taxableIncome);
+    
+    // Medicare levy (2%)
+    const medicareLevy = taxableIncome > 29207 ? taxableIncome * 0.02 : 0;
+    
+    // HECS repayment
+    let hecsRepayment = 0;
+    if (userProfile.hasHECS) {
+      if (taxableIncome > 51550) {
+        hecsRepayment = taxableIncome * 0.01; // Simplified HECS calculation
+      }
+    }
+    
+    const totalTax = tax + medicareLevy + hecsRepayment;
+    const afterTax = userProfile.income - totalTax;
+    const effectiveRate = (totalTax / userProfile.income) * 100;
+    
+    const bracket = TAX_BRACKETS.find(b => 
+      taxableIncome >= b.min && (b.max === null || taxableIncome <= b.max)
+    );
+    
+    return {
+      taxableIncome,
+      tax: totalTax,
+      afterTax,
+      effectiveRate,
+      marginalRate: (bracket?.rate || 0) * 100,
+      bracketName: `${((bracket?.rate || 0) * 100).toFixed(0)}% bracket`,
+      medicareLevyy: medicareLevy,
+      totalDeductions: deductions
+    };
+  }, [userProfile]);
+
+  // Age group specific content
+  const renderAgeSpecificDashboard = () => {
+    switch(selectedAgeGroup) {
+      case 'genz':
+        return <GenZDashboard profile={userProfile} calculation={taxCalculation} />;
+      case 'millennial':
+        return <MillennialDashboard profile={userProfile} calculation={taxCalculation} />;
+      case 'genx':
+        return <GenXDashboard profile={userProfile} calculation={taxCalculation} />;
+      case 'boomer':
+        return <BoomerDashboard profile={userProfile} calculation={taxCalculation} />;
+      case 'senior':
+        return <SeniorDashboard profile={userProfile} calculation={taxCalculation} />;
+      default:
+        return <MillennialDashboard profile={userProfile} calculation={taxCalculation} />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            TaxEnd.ai
+          </h1>
+          <p className="text-gray-600">让税务变得简单 - 为每个人设计</p>
+        </div>
+
+        {/* Quick Profile Setup */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>快速设置</CardTitle>
+            <CardDescription>告诉我们一些基本信息，获得个性化建议</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <Label>年龄</Label>
+                <Input 
+                  type="number" 
+                  value={userProfile.age}
+                  onChange={(e) => setUserProfile({...userProfile, age: parseInt(e.target.value)})}
+                />
+              </div>
+              <div>
+                <Label>年收入</Label>
+                <Input 
+                  type="number" 
+                  value={userProfile.income}
+                  onChange={(e) => setUserProfile({...userProfile, income: parseInt(e.target.value)})}
+                />
+              </div>
+              <div>
+                <Label>职业类型</Label>
+                <select 
+                  className="w-full p-2 border rounded"
+                  value={userProfile.occupation}
+                  onChange={(e) => setUserProfile({...userProfile, occupation: e.target.value})}
+                >
+                  <option value="office_worker">办公室职员</option>
+                  <option value="tradesperson">技工</option>
+                  <option value="healthcare">医护人员</option>
+                  <option value="teacher">教师</option>
+                  <option value="it">IT专业人士</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <Button className="w-full">
+                  <Calculator className="mr-2 h-4 w-4" />
+                  立即计算
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Main Dashboard */}
+        {renderAgeSpecificDashboard()}
+      </div>
+    </div>
+  );
+}
+
+// Gen Z Dashboard Component (18-25)
+function GenZDashboard({ profile, calculation }: { profile: UserProfile; calculation: TaxCalculation }) {
+  return (
+    <div className="space-y-6">
+      {/* Fun Welcome Card */}
+      <Card className="bg-gradient-to-r from-pink-500 to-yellow-500 text-white">
+        <CardContent className="p-8 text-center">
+          <div className="text-6xl mb-4">🎉</div>
+          <h2 className="text-3xl font-bold mb-2">欢迎来到税务世界！</h2>
+          <p className="text-xl opacity-90">让报税像刷抖音一样简单</p>
+        </CardContent>
+      </Card>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">你能退回</p>
+                <p className="text-3xl font-bold text-green-600">
+                  ${Math.max(0, calculation.totalDeductions * 0.19).toFixed(0)}
+                </p>
+              </div>
+              <div className="text-4xl">💰</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">实际税率</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {calculation.effectiveRate.toFixed(1)}%
+                </p>
+              </div>
+              <div className="text-4xl">📊</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">每月到手</p>
+                <p className="text-3xl font-bold">
+                  ${(calculation.afterTax / 12).toFixed(0)}
+                </p>
+              </div>
+              <div className="text-4xl">📱</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Action Cards */}
+      <Card>
+        <CardHeader>
+          <CardTitle>快速操作</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Alert className="bg-blue-50 border-blue-200">
+            <AlertDescription className="flex items-center justify-between">
+              <div>
+                <strong>📸 拍照上传W-2表</strong>
+                <p className="text-sm text-gray-600 mt-1">2分钟搞定，自动识别</p>
+              </div>
+              <Button size="sm">开始</Button>
+            </AlertDescription>
+          </Alert>
+
+          {profile.hasHECS && (
+            <Alert className="bg-green-50 border-green-200">
+              <AlertDescription className="flex items-center justify-between">
+                <div>
+                  <strong>🎓 HECS-HELP还款</strong>
+                  <p className="text-sm text-gray-600 mt-1">你需要还款 ${(profile.income * 0.01).toFixed(0)}/年</p>
+                </div>
+                <Button size="sm" variant="outline">了解更多</Button>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {profile.workFromHome && (
+            <Alert className="bg-yellow-50 border-yellow-200">
+              <AlertDescription className="flex items-center justify-between">
+                <div>
+                  <strong>🏠 在家办公扣除</strong>
+                  <p className="text-sm text-gray-600 mt-1">别忘了申报！能省$190</p>
+                </div>
+                <Button size="sm" variant="outline">添加</Button>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Millennial Dashboard Component (26-35)
+function MillennialDashboard({ profile, calculation }: { profile: UserProfile; calculation: TaxCalculation }) {
+  const savingsOpportunities = [
+    { title: '增加养老金供款', amount: 2890, description: '减少应税收入' },
+    { title: '在家办公费用', amount: 1000, description: '简化方法申报' },
+    { title: '职业发展费用', amount: 500, description: '培训和会员费' }
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Professional Header */}
+      <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <CardContent className="p-8">
+          <h2 className="text-2xl font-bold mb-2">智能税务优化中心</h2>
+          <p className="opacity-90">AI驱动 • 实时计算 • 最大化节省</p>
+        </CardContent>
+      </Card>
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <p className="text-3xl font-bold text-blue-600">
+              ${calculation.afterTax.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">税后收入</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <p className="text-3xl font-bold text-green-600">
+              {calculation.effectiveRate.toFixed(1)}%
+            </p>
+            <p className="text-sm text-gray-600 mt-1">实际税率</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <p className="text-3xl font-bold text-purple-600">
+              ${calculation.totalDeductions}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">总扣除额</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <p className="text-3xl font-bold text-orange-600">
+              92%
+            </p>
+            <p className="text-sm text-gray-600 mt-1">优化分数</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Optimization Opportunities */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            优化机会
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {savingsOpportunities.map((opp, idx) => (
+            <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+              <div className="flex-1">
+                <p className="font-semibold">{opp.title}</p>
+                <p className="text-sm text-gray-600">{opp.description}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold text-green-600">+${opp.amount}</p>
+                <Button size="sm" variant="outline" className="mt-1">实施</Button>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Bracket Creep Warning */}
+      {profile.income > 40000 && profile.income < 45000 && (
+        <Alert className="border-yellow-500 bg-yellow-50">
+          <AlertDescription>
+            <strong>⚠️ Bracket Creep警告：</strong> 
+            你距离32.5%税档只有${(45000 - profile.income).toLocaleString()}。
+            考虑增加养老金供款来避免跳档。
+          </AlertDescription>
+        </Alert>
+      )}
+    </div>
+  );
+}
+
+// Gen X Dashboard Component (36-45)
+function GenXDashboard({ profile, calculation }: { profile: UserProfile; calculation: TaxCalculation }) {
+  return (
+    <div className="space-y-6">
+      <Card className="bg-slate-900 text-white">
+        <CardContent className="p-8">
+          <h2 className="text-2xl font-bold mb-2">高级税务策略仪表板</h2>
+          <p className="opacity-80">综合分析 • 投资优化 • 多年规划</p>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
+          <CardContent className="p-6">
+            <h3 className="font-semibold text-blue-900 mb-2">税务效率</h3>
+            <p className="text-3xl font-bold text-blue-600">94.2%</p>
+            <p className="text-sm text-blue-700 mt-2">↑ 比去年提升4.5%</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-green-50 to-green-100">
+          <CardContent className="p-6">
+            <h3 className="font-semibold text-green-900 mb-2">年度节省</h3>
+            <p className="text-3xl font-bold text-green-600">${(calculation.totalDeductions * 0.325).toFixed(0)}</p>
+            <p className="text-sm text-green-700 mt-2">18个策略激活</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100">
+          <CardContent className="p-6">
+            <h3 className="font-semibold text-purple-900 mb-2">投资税务</h3>
+            <p className="text-3xl font-bold text-purple-600">优化</p>
+            <p className="text-sm text-purple-700 mt-2">负扣税已配置</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>策略执行清单</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded">
+              <span className="text-green-600">✓</span>
+              <span>最大化养老金供款</span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded">
+              <span className="text-green-600">✓</span>
+              <span>配置薪资牺牲</span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded">
+              <span className="text-yellow-600">⚡</span>
+              <span>税损收割 - 需要在12月31日前完成</span>
+            </div>
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded">
+              <span className="text-gray-400">○</span>
+              <span>家庭信托设置</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Boomer Dashboard Component (46-55)
+function BoomerDashboard({ profile, calculation }: { profile: UserProfile; calculation: TaxCalculation }) {
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="bg-gray-50">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-2xl">税务管理控制台</CardTitle>
+              <CardDescription>2024税年 • 综合审查</CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button>导出报告</Button>
+              <Button variant="outline">预约咨询</Button>
+            </div>
+          </div>
+        </CardHeader>
+      </Card>
+
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">概览</TabsTrigger>
+          <TabsTrigger value="retirement">退休规划</TabsTrigger>
+          <TabsTrigger value="investments">投资税务</TabsTrigger>
+          <TabsTrigger value="estate">遗产规划</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4">关键绩效指标</h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 rounded">
+                  <div>
+                    <p className="text-sm text-gray-600">类别</p>
+                    <p className="font-semibold">养老金供款</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">当前状态</p>
+                    <p className="text-green-600 font-semibold">✓ 已最大化</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">年度表现</p>
+                    <p className="font-semibold">$30,000 / $30,000</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">需要行动</p>
+                    <p>无</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4 p-4 bg-gray-50 rounded">
+                  <div>
+                    <p className="text-sm text-gray-600">类别</p>
+                    <p className="font-semibold">追加供款</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">当前状态</p>
+                    <p className="text-green-600 font-semibold">✓ 按计划</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">年度表现</p>
+                    <p className="font-semibold">$7,500 / $7,500</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">需要行动</p>
+                    <p>无</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// Senior Dashboard Component (56+)
+function SeniorDashboard({ profile, calculation }: { profile: UserProfile; calculation: TaxCalculation }) {
+  return (
+    <div className="space-y-6">
+      <Card className="bg-gradient-to-r from-emerald-600 to-green-600 text-white">
+        <CardContent className="p-8 text-center">
+          <h2 className="text-3xl font-bold mb-2">您的退休税务中心</h2>
+          <p className="text-xl opacity-90">简单清晰的税务管理</p>
+        </CardContent>
+      </Card>
+
+      <Alert className="bg-green-50 border-green-300">
+        <AlertDescription className="text-lg">
+          <strong>好消息！</strong> 您的退休收入结构优化良好，每年节省约$18,500的税务。
+        </AlertDescription>
+      </Alert>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Shield className="h-6 w-6" />
+            您的税务摘要
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-lg">养老金收入</p>
+                <p className="text-gray-600">$48,000 (RMD已满足)</p>
+              </div>
+              <span className="text-2xl">✅</span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-lg">投资收入</p>
+                <p className="text-gray-600">$15,000 (合格股息)</p>
+              </div>
+              <span className="text-2xl">✅</span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-lg">医疗费用扣除</p>
+                <p className="text-gray-600">$5,800 已记录</p>
+              </div>
+              <span className="text-2xl">✅</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex gap-4 justify-center">
+        <Button size="lg" className="text-lg py-6 px-8">
+          <Phone className="mr-2 h-5 w-5" />
+          电话求助
+        </Button>
+        <Button size="lg" variant="outline" className="text-lg py-6 px-8">
+          <FileText className="mr-2 h-5 w-5" />
+          打印表格
+        </Button>
+      </div>
+    </div>
+  );
+}
