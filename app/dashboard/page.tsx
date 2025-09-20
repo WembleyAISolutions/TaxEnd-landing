@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { 
   DollarSign, 
   FileText, 
@@ -12,8 +13,11 @@ import {
   Clock,
   Calculator,
   User,
-  CreditCard
+  CreditCard,
+  RefreshCw
 } from 'lucide-react'
+import { AnimatedCounter } from './components/AnimatedCounter'
+import { StatCardSkeleton, ActivitySkeleton } from './components/SkeletonLoader'
 
 const stats = [
   { label: 'Tax Saved', value: '$3,247', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-100' },
@@ -29,37 +33,116 @@ const recentActivity = [
 ]
 
 export default function DashboardPage() {
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+
+  useEffect(() => {
+    // Simulate initial data loading
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setRefreshing(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-2"></div>
+          <div className="h-4 w-96 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </div>
+        <ActivitySkeleton />
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="text-gray-600 mt-2">Welcome back! Here's your tax status at a glance.</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+          <p className="text-gray-600 mt-2">Welcome back! Here's your tax status at a glance.</p>
+        </div>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw 
+            className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} 
+          />
+          <span className="text-sm font-medium">Refresh</span>
+        </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl p-6 shadow-sm border">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        {stats.map((stat, index) => (
+          <motion.div 
+            key={stat.label} 
+            className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
+            whileHover={{ y: -2 }}
+          >
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-lg ${stat.bg}`}>
                 <stat.icon className={stat.color} size={24} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+            <AnimatedCounter 
+              value={stat.value}
+              className="text-2xl font-bold text-gray-900 block"
+            />
             <p className="text-sm text-gray-600">{stat.label}</p>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-sm border">
+      <motion.div 
+        className="bg-white rounded-xl shadow-sm border"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         <div className="p-6 border-b">
           <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
         </div>
         <div className="p-6 space-y-4">
-          {recentActivity.map((activity) => (
-            <div key={activity.id} className="flex items-start space-x-3">
+          {recentActivity.map((activity, index) => (
+            <motion.div 
+              key={activity.id} 
+              className="flex items-start space-x-3"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
+            >
               {activity.type === 'success' && <CheckCircle className="text-green-500 mt-1" size={20} />}
               {activity.type === 'info' && <AlertCircle className="text-blue-500 mt-1" size={20} />}
               {activity.type === 'warning' && <Clock className="text-yellow-500 mt-1" size={20} />}
@@ -67,29 +150,39 @@ export default function DashboardPage() {
                 <p className="text-gray-900">{activity.message}</p>
                 <p className="text-sm text-gray-500">{activity.time}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/dashboard/calculator" className="bg-blue-600 text-white p-6 rounded-xl hover:bg-blue-700 transition-colors text-left block">
-          <Calculator className="mb-3" size={24} />
-          <h3 className="font-semibold text-lg">Tax Calculator</h3>
-          <p className="text-blue-100 text-sm mt-1">Calculate your tax liability</p>
-        </Link>
-        <Link href="/dashboard/tax-returns" className="bg-purple-600 text-white p-6 rounded-xl hover:bg-purple-700 transition-colors text-left block">
-          <FileText className="mb-3" size={24} />
-          <h3 className="font-semibold text-lg">Tax Returns</h3>
-          <p className="text-purple-100 text-sm mt-1">View your filing history</p>
-        </Link>
-        <Link href="/dashboard/profile" className="bg-green-600 text-white p-6 rounded-xl hover:bg-green-700 transition-colors text-left block">
-          <User className="mb-3" size={24} />
-          <h3 className="font-semibold text-lg">Profile Settings</h3>
-          <p className="text-green-100 text-sm mt-1">Manage your account</p>
-        </Link>
-      </div>
-    </div>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        {[
+          { href: '/dashboard/calculator', icon: Calculator, title: 'Tax Calculator', desc: 'Calculate your tax liability', color: 'bg-blue-600 hover:bg-blue-700' },
+          { href: '/dashboard/tax-returns', icon: FileText, title: 'Tax Returns', desc: 'View your filing history', color: 'bg-purple-600 hover:bg-purple-700' },
+          { href: '/dashboard/profile', icon: User, title: 'Profile Settings', desc: 'Manage your account', color: 'bg-green-600 hover:bg-green-700' }
+        ].map((action, index) => (
+          <motion.div
+            key={action.href}
+            whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
+          >
+            <Link href={action.href} className={`${action.color} text-white p-6 rounded-xl transition-all text-left block shadow-lg`}>
+              <action.icon className="mb-3" size={24} />
+              <h3 className="font-semibold text-lg">{action.title}</h3>
+              <p className="text-white/80 text-sm mt-1">{action.desc}</p>
+            </Link>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
   )
 }

@@ -1,45 +1,100 @@
 'use client'
 
 import { useState } from 'react'
-import { Calculator, DollarSign, TrendingUp, FileText } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { motion } from 'framer-motion'
+import { Calculator, DollarSign, TrendingUp, FileText, AlertCircle, History } from 'lucide-react'
+import { toast } from 'sonner'
+
+const taxCalculationSchema = z.object({
+  income: z.number().min(0, 'Income must be positive').max(10000000, 'Income seems unrealistic'),
+  deductions: z.number().min(0, 'Deductions must be positive').max(1000000, 'Deductions seem unrealistic'),
+})
+
+type TaxCalculationForm = z.infer<typeof taxCalculationSchema>
+
+interface TaxResult {
+  taxableIncome: number
+  taxOwed: number
+  afterTax: number
+  effectiveRate: number
+  marginalRate: number
+}
 
 export default function TaxCalculator() {
-  const [income, setIncome] = useState('')
-  const [deductions, setDeductions] = useState('')
-  const [taxResult, setTaxResult] = useState<{
-    taxableIncome: number
-    taxOwed: number
-    afterTax: number
-  } | null>(null)
+  const [taxResult, setTaxResult] = useState<TaxResult | null>(null)
+  const [calculationHistory, setCalculationHistory] = useState<TaxResult[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const calculateTax = () => {
-    const grossIncome = parseFloat(income) || 0
-    const totalDeductions = parseFloat(deductions) || 0
-    const taxableIncome = Math.max(0, grossIncome - totalDeductions)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<TaxCalculationForm>({
+    resolver: zodResolver(taxCalculationSchema),
+    defaultValues: {
+      income: 0,
+      deductions: 0,
+    },
+  })
+
+  const calculateTax = async (data: TaxCalculationForm) => {
+    setLoading(true)
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    const { income, deductions } = data
+    const taxableIncome = Math.max(0, income - deductions)
     
     // Simplified Australian tax brackets for 2024-25
     let taxOwed = 0
+    let marginalRate = 0
+    
     if (taxableIncome > 18200) {
       if (taxableIncome <= 45000) {
         taxOwed = (taxableIncome - 18200) * 0.19
+        marginalRate = 19
       } else if (taxableIncome <= 120000) {
         taxOwed = 5092 + (taxableIncome - 45000) * 0.325
+        marginalRate = 32.5
       } else if (taxableIncome <= 180000) {
         taxOwed = 29467 + (taxableIncome - 120000) * 0.37
+        marginalRate = 37
       } else {
         taxOwed = 51667 + (taxableIncome - 180000) * 0.45
+        marginalRate = 45
       }
     }
 
-    setTaxResult({
+    const effectiveRate = taxableIncome > 0 ? (taxOwed / taxableIncome) * 100 : 0
+    const result: TaxResult = {
       taxableIncome,
       taxOwed,
-      afterTax: taxableIncome - taxOwed
-    })
+      afterTax: taxableIncome - taxOwed,
+      effectiveRate,
+      marginalRate,
+    }
+
+    setTaxResult(result)
+    setCalculationHistory(prev => [result, ...prev.slice(0, 4)]) // Keep last 5 calculations
+    setLoading(false)
+    
+    toast.success('Tax calculation completed!')
   }
 
+  const watchedValues = watch()
+
   return (
-    <div className="space-y-6">
+    <motion.div 
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div>
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Calculator className="text-blue-600" size={32} />
@@ -50,21 +105,33 @@ export default function TaxCalculator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Input Section */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <motion.div 
+          className="bg-white rounded-xl shadow-sm border p-6"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Income Details</h2>
           
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit(calculateTax)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Annual Gross Income ($)
               </label>
               <input
                 type="number"
-                value={income}
-                onChange={(e) => setIncome(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register('income', { valueAsNumber: true })}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                  errors.income ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 placeholder="e.g., 75000"
               />
+              {errors.income && (
+                <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                  <AlertCircle size={14} />
+                  {errors.income.message}
+                </div>
+              )}
             </div>
             
             <div>
@@ -73,28 +140,55 @@ export default function TaxCalculator() {
               </label>
               <input
                 type="number"
-                value={deductions}
-                onChange={(e) => setDeductions(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {...register('deductions', { valueAsNumber: true })}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
+                  errors.deductions ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 placeholder="e.g., 5000"
               />
+              {errors.deductions && (
+                <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                  <AlertCircle size={14} />
+                  {errors.deductions.message}
+                </div>
+              )}
             </div>
+
+            {/* Live Preview */}
+            {watchedValues.income > 0 && (
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  Taxable Income: ${Math.max(0, (watchedValues.income || 0) - (watchedValues.deductions || 0)).toLocaleString()}
+                </p>
+              </div>
+            )}
             
             <button
-              onClick={calculateTax}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Calculate Tax
+              {loading ? 'Calculating...' : 'Calculate Tax'}
             </button>
-          </div>
-        </div>
+          </form>
+        </motion.div>
 
         {/* Results Section */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
+        <motion.div 
+          className="bg-white rounded-xl shadow-sm border p-6"
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Tax Calculation Results</h2>
           
           {taxResult ? (
-            <div className="space-y-4">
+            <motion.div 
+              className="space-y-4"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2">
                   <FileText className="text-gray-600" size={20} />
@@ -118,6 +212,18 @@ export default function TaxCalculator() {
                 </div>
                 <span className="text-lg font-bold text-green-600">${taxResult.afterTax.toLocaleString()}</span>
               </div>
+
+              {/* Tax Rates */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 bg-orange-50 rounded-lg text-center">
+                  <p className="text-sm text-orange-600 font-medium">Effective Rate</p>
+                  <p className="text-lg font-bold text-orange-700">{taxResult.effectiveRate.toFixed(1)}%</p>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg text-center">
+                  <p className="text-sm text-purple-600 font-medium">Marginal Rate</p>
+                  <p className="text-lg font-bold text-purple-700">{taxResult.marginalRate}%</p>
+                </div>
+              </div>
               
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800">
@@ -125,15 +231,39 @@ export default function TaxCalculator() {
                   Actual tax calculations may include Medicare levy, offsets, and other factors.
                 </p>
               </div>
-            </div>
+            </motion.div>
           ) : (
             <div className="text-center py-8 text-gray-500">
               <Calculator size={48} className="mx-auto mb-4 opacity-50" />
               <p>Enter your income details and click "Calculate Tax" to see results</p>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+
+      {/* Calculation History */}
+      {calculationHistory.length > 0 && (
+        <motion.div 
+          className="bg-white rounded-xl shadow-sm border p-6"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <History className="text-gray-600" size={20} />
+            <h3 className="text-lg font-semibold text-gray-900">Recent Calculations</h3>
+          </div>
+          <div className="space-y-2">
+            {calculationHistory.map((calc, index) => (
+              <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg text-sm">
+                <span>Income: ${calc.taxableIncome.toLocaleString()}</span>
+                <span>Tax: ${calc.taxOwed.toLocaleString()}</span>
+                <span className="text-green-600 font-medium">{calc.effectiveRate.toFixed(1)}%</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
   )
 }
