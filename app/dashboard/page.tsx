@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { AnimatedCounter } from './components/AnimatedCounter'
 import { StatCardSkeleton, ActivitySkeleton } from './components/SkeletonLoader'
+import { DashboardCharts } from './components/DashboardCharts'
 
 const stats = [
   { label: 'Tax Saved', value: '$3,247', icon: DollarSign, color: 'text-green-600', bg: 'bg-green-100' },
@@ -124,12 +125,15 @@ export default function DashboardPage() {
         ))}
       </motion.div>
 
+      {/* Tax Analytics Charts */}
+      <DashboardCharts />
+
       {/* Recent Activity */}
       <motion.div 
         className="bg-white rounded-xl shadow-sm border"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
       >
         <div className="p-6 border-b">
           <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
@@ -160,7 +164,7 @@ export default function DashboardPage() {
         className="grid grid-cols-1 md:grid-cols-3 gap-6"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
       >
         {[
           { href: '/dashboard/calculator', icon: Calculator, title: 'Tax Calculator', desc: 'Calculate your tax liability', color: 'bg-blue-600 hover:bg-blue-700' },

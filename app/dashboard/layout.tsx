@@ -1,6 +1,5 @@
 'use client'
 
-import { Metadata } from 'next'
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -17,11 +16,6 @@ import {
   Menu,
   X
 } from 'lucide-react'
-
-export const metadata: Metadata = {
-  title: 'Dashboard - TaxEnd.AI',
-  description: 'Manage your tax returns and account',
-}
 
 const sidebarItems = [
   { icon: Home, label: 'Overview', href: '/dashboard' },
