@@ -5,12 +5,15 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
-import { Calculator, DollarSign, TrendingUp, FileText, AlertCircle, History } from 'lucide-react'
+import { Calculator, DollarSign, TrendingUp, FileText, AlertCircle, History, Save } from 'lucide-react'
 import { toast } from 'sonner'
+import { taxEndAPI, TaxCalculationInput, TaxCalculationResult } from '../../../lib/api'
 
 const taxCalculationSchema = z.object({
   income: z.number().min(0, 'Income must be positive').max(10000000, 'Income seems unrealistic'),
   deductions: z.number().min(0, 'Deductions must be positive').max(1000000, 'Deductions seem unrealistic'),
+  hasPrivateHealth: z.boolean().optional(),
+  isResident: z.boolean().optional(),
 })
 
 type TaxCalculationForm = z.infer<typeof taxCalculationSchema>
@@ -21,6 +24,14 @@ interface TaxResult {
   afterTax: number
   effectiveRate: number
   marginalRate: number
+  medicareLevy?: number
+  medicareSurcharge?: number
+  breakdown?: {
+    federalTax: number
+    stateTax?: number
+    medicare: number
+    surcharge?: number
+  }
 }
 
 export default function TaxCalculator() {
@@ -44,46 +55,128 @@ export default function TaxCalculator() {
   const calculateTax = async (data: TaxCalculationForm) => {
     setLoading(true)
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    const { income, deductions } = data
-    const taxableIncome = Math.max(0, income - deductions)
-    
-    // Simplified Australian tax brackets for 2024-25
-    let taxOwed = 0
-    let marginalRate = 0
-    
-    if (taxableIncome > 18200) {
-      if (taxableIncome <= 45000) {
-        taxOwed = (taxableIncome - 18200) * 0.19
-        marginalRate = 19
-      } else if (taxableIncome <= 120000) {
-        taxOwed = 5092 + (taxableIncome - 45000) * 0.325
-        marginalRate = 32.5
-      } else if (taxableIncome <= 180000) {
-        taxOwed = 29467 + (taxableIncome - 120000) * 0.37
-        marginalRate = 37
-      } else {
-        taxOwed = 51667 + (taxableIncome - 180000) * 0.45
-        marginalRate = 45
+    try {
+      // Prepare API input
+      const apiInput: TaxCalculationInput = {
+        income: data.income,
+        deductions: data.deductions || 0,
+        hasPrivateHealth: data.hasPrivateHealth || false,
+        isResident: data.isResident !== false, // Default to true
+        taxYear: new Date().getFullYear(),
       }
-    }
 
-    const effectiveRate = taxableIncome > 0 ? (taxOwed / taxableIncome) * 100 : 0
-    const result: TaxResult = {
-      taxableIncome,
-      taxOwed,
-      afterTax: taxableIncome - taxOwed,
-      effectiveRate,
-      marginalRate,
-    }
+      // Call TaxEnd API
+      const response = await taxEndAPI.calculateTax(apiInput)
+      
+      if (response.success && response.data) {
+        const apiResult = response.data
+        
+        // Convert API result to local TaxResult format
+        const result: TaxResult = {
+          taxableIncome: apiResult.taxableIncome,
+          taxOwed: apiResult.totalTax,
+          afterTax: apiResult.netIncome,
+          effectiveRate: apiResult.effectiveRate,
+          marginalRate: apiResult.marginalRate,
+          medicareLevy: apiResult.medicareLevy,
+          medicareSurcharge: apiResult.medicareSurcharge,
+          breakdown: apiResult.breakdown,
+        }
 
-    setTaxResult(result)
-    setCalculationHistory(prev => [result, ...prev.slice(0, 4)]) // Keep last 5 calculations
-    setLoading(false)
+        setTaxResult(result)
+        setCalculationHistory(prev => [result, ...prev.slice(0, 4)]) // Keep last 5 calculations
+        
+        // Save tax return to API
+        await taxEndAPI.saveTaxReturn(apiInput, apiResult)
+        
+        toast.success('Tax calculation completed!')
+      } else {
+        throw new Error(response.message || 'Tax calculation failed')
+      }
+    } catch (error) {
+      console.error('Tax calculation error:', error)
+      
+      // Fallback to local calculation if API fails
+      const { income, deductions } = data
+      const taxableIncome = Math.max(0, income - (deductions || 0))
+      
+      // Simplified Australian tax brackets for 2024-25
+      let taxOwed = 0
+      let marginalRate = 0
+      
+      if (taxableIncome > 18200) {
+        if (taxableIncome <= 45000) {
+          taxOwed = (taxableIncome - 18200) * 0.19
+          marginalRate = 19
+        } else if (taxableIncome <= 120000) {
+          taxOwed = 5092 + (taxableIncome - 45000) * 0.325
+          marginalRate = 32.5
+        } else if (taxableIncome <= 180000) {
+          taxOwed = 29467 + (taxableIncome - 120000) * 0.37
+          marginalRate = 37
+        } else {
+          taxOwed = 51667 + (taxableIncome - 180000) * 0.45
+          marginalRate = 45
+        }
+      }
+
+      const effectiveRate = taxableIncome > 0 ? (taxOwed / taxableIncome) * 100 : 0
+      const result: TaxResult = {
+        taxableIncome,
+        taxOwed,
+        afterTax: taxableIncome - taxOwed,
+        effectiveRate,
+        marginalRate,
+      }
+
+      setTaxResult(result)
+      setCalculationHistory(prev => [result, ...prev.slice(0, 4)])
+      
+      toast.warning('Using offline calculation - API unavailable')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const saveTaxReturn = async () => {
+    if (!taxResult) return
     
-    toast.success('Tax calculation completed!')
+    try {
+      const apiInput: TaxCalculationInput = {
+        income: watchedValues.income,
+        deductions: watchedValues.deductions || 0,
+        hasPrivateHealth: watchedValues.hasPrivateHealth || false,
+        isResident: watchedValues.isResident !== false,
+        taxYear: new Date().getFullYear(),
+      }
+
+      const apiResult: TaxCalculationResult = {
+        taxableIncome: taxResult.taxableIncome,
+        incomeTax: taxResult.taxOwed - (taxResult.medicareLevy || 0) - (taxResult.medicareSurcharge || 0),
+        medicareLevy: taxResult.medicareLevy || 0,
+        medicareSurcharge: taxResult.medicareSurcharge || 0,
+        totalTax: taxResult.taxOwed,
+        netIncome: taxResult.afterTax,
+        effectiveRate: taxResult.effectiveRate,
+        marginalRate: taxResult.marginalRate,
+        breakdown: taxResult.breakdown || {
+          federalTax: taxResult.taxOwed,
+          medicare: taxResult.medicareLevy || 0,
+          surcharge: taxResult.medicareSurcharge || 0,
+        },
+      }
+
+      const response = await taxEndAPI.saveTaxReturn(apiInput, apiResult)
+      
+      if (response.success) {
+        toast.success('Tax return saved successfully!')
+      } else {
+        toast.error(response.message || 'Failed to save tax return')
+      }
+    } catch (error) {
+      console.error('Save tax return error:', error)
+      toast.error('Failed to save tax return')
+    }
   }
 
   const watchedValues = watch()
@@ -152,6 +245,32 @@ export default function TaxCalculator() {
                   {errors.deductions.message}
                 </div>
               )}
+            </div>
+
+            {/* Additional Options */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  {...register('hasPrivateHealth')}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label className="text-sm text-gray-700">
+                  I have private health insurance
+                </label>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  {...register('isResident')}
+                  defaultChecked={true}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label className="text-sm text-gray-700">
+                  I am an Australian tax resident
+                </label>
+              </div>
             </div>
 
             {/* Live Preview */}
@@ -225,10 +344,19 @@ export default function TaxCalculator() {
                 </div>
               </div>
               
+              {/* Save Tax Return Button */}
+              <button
+                onClick={saveTaxReturn}
+                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <Save size={16} />
+                Save Tax Return
+              </button>
+              
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> This is a simplified calculation based on 2024-25 Australian tax brackets. 
-                  Actual tax calculations may include Medicare levy, offsets, and other factors.
+                  <strong>Note:</strong> This calculation uses the TaxEnd-API for accurate tax calculations. 
+                  Results include Medicare levy, offsets, and other factors based on 2024-25 Australian tax law.
                 </p>
               </div>
             </motion.div>
