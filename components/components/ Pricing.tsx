@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Check, X } from 'lucide-react';
 
 const pricingPlans = [
@@ -18,6 +19,7 @@ const pricingPlans = [
       { text: 'Export reports', included: false },
     ],
     buttonText: 'Get Started',
+    buttonLink: '/en/signup',
     buttonStyle: 'bg-gray-600 hover:bg-gray-700',
     popular: false,
   },
@@ -35,6 +37,7 @@ const pricingPlans = [
       { text: 'API access', included: false },
     ],
     buttonText: 'Start Free Trial',
+    buttonLink: '/en/signup?plan=pro',
     buttonStyle: 'bg-blue-600 hover:bg-blue-700',
     popular: true,
   },
@@ -52,6 +55,7 @@ const pricingPlans = [
       { text: 'Dedicated support', included: true },
     ],
     buttonText: 'Contact Sales',
+    buttonLink: '/contact',
     buttonStyle: 'bg-gray-600 hover:bg-gray-700',
     popular: false,
   },
@@ -120,11 +124,13 @@ export default function PricingComponent() {
                 ))}
               </ul>
 
-              <button
-                className={`w-full py-3 px-6 rounded-lg text-white font-semibold transition ${plan.buttonStyle}`}
-              >
-                {plan.buttonText}
-              </button>
+              <Link href={plan.buttonLink}>
+                <button
+                  className={`w-full py-3 px-6 rounded-lg text-white font-semibold transition ${plan.buttonStyle}`}
+                >
+                  {plan.buttonText}
+                </button>
+              </Link>
             </div>
           ))}
         </div>
