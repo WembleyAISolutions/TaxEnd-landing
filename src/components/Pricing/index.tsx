@@ -54,7 +54,7 @@ export default function Pricing() {
   const handleCheckout = async (planKey: PricingPlan) => {
     if (planKey === 'enterprise') {
       // For enterprise, redirect to contact form or sales
-      window.location.href = '/contact?plan=enterprise';
+      window.location.href = 'mailto:taxend@wembleydigital.com.au?subject=TaxEnd%20Enterprise%20Plan%20Inquiry';
       return;
     }
 
