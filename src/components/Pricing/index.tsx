@@ -25,7 +25,7 @@ const pricingTiers: PricingTier[] = [
     price: PRICING_PLANS.basic.price,
     description: PRICING_PLANS.basic.description,
     features: PRICING_PLANS.basic.features,
-    buttonText: "Start Free Trial"
+    buttonText: "Get Started"
   },
   {
     key: 'pro',
@@ -52,12 +52,19 @@ export default function Pricing() {
   const [error, setError] = useState<string | null>(null);
 
   const handleCheckout = async (planKey: PricingPlan) => {
+    // Handle Basic plan - direct signup redirect
+    if (planKey === 'basic') {
+      window.location.href = '/en/signup';
+      return;
+    }
+
+    // Handle Enterprise plan - mailto
     if (planKey === 'enterprise') {
-      // For enterprise, redirect to contact form or sales
       window.location.href = 'mailto:taxend@wembleydigital.com.au?subject=TaxEnd%20Enterprise%20Plan%20Inquiry';
       return;
     }
 
+    // Handle Pro plan - Stripe checkout
     try {
       setLoadingPlan(planKey);
       setError(null);
