@@ -36,21 +36,28 @@ export default function CGTCalculator({ profile, onClose, onAddEvent }: CGTCalcu
   const [saleProceeds, setSaleProceeds] = useState('150000');
   const [result, setResult] = useState<CGTEvent | null>(null);
 
-  const handleCalculate = () => {
-    const event = calculateCGT(
-      {
-        id: Date.now().toString(),
-        assetType,
-        assetName: assetName || assetTypes.find(t => t.value === assetType)?.label || '资产',
-        acquisitionDate: new Date(acquisitionDate),
-        disposalDate: new Date(disposalDate),
-        costBase: parseFloat(costBase) || 0,
-        saleProceeds: parseFloat(saleProceeds) || 0,
-      },
-      profile.annualIncome
-    );
-    setResult(event);
-  };
+const handleCalculate = () => {
+  const holdingPeriod = calculateHoldingPeriod(
+    new Date(acquisitionDate),
+    new Date(disposalDate)
+  );
+  const eligibleForDiscount = holdingPeriod >= 365;
+  
+  const event = calculateCGT(
+    {
+      id: Date.now().toString(),
+      assetType,
+      assetName: assetName || assetTypes.find(t => t.value === assetType)?.label || '资产',
+      acquisitionDate: new Date(acquisitionDate),
+      disposalDate: new Date(disposalDate),
+      costBase: parseFloat(costBase) || 0,
+      saleProceeds: parseFloat(saleProceeds) || 0,
+      discountApplied: eligibleForDiscount,
+    },
+    profile.annualIncome
+  );
+  setResult(event);
+};
 
   const holdingPeriod = calculateHoldingPeriod(
     new Date(acquisitionDate),
