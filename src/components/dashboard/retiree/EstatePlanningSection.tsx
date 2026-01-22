@@ -170,7 +170,7 @@ export default function EstatePlanningSection({
                             {item.title}
                           </h4>
                           <p className="text-sm text-gray-600">{item.description}</p>
-                          {item.priority === 'high' && !item.status === 'completed' && (
+                          {item.priority === 'high' && item.status !== 'completed' && (
                             <span className="inline-flex items-center gap-1 mt-1 text-xs text-red-600">
                               <AlertTriangle className="w-3 h-3" />
                               High Priority
