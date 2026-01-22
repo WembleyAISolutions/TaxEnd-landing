@@ -1,6 +1,6 @@
 /**
  * AISuggestionsSection Component
- * AI智能建议部分
+ * AI smart suggestions section
  */
 
 'use client';
@@ -54,7 +54,7 @@ export default function AISuggestionsSection({ suggestions }: AISuggestionsSecti
                 <p className="text-sm text-gray-600 mb-2">{suggestion.description}</p>
                 {suggestion.potentialSavings > 0 && (
                   <p className="text-sm font-bold text-green-600">
-                    可节省: {formatCurrency(suggestion.potentialSavings)}
+                    Potential Savings: {formatCurrency(suggestion.potentialSavings)}
                   </p>
                 )}
               </div>

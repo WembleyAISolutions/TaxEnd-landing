@@ -1,6 +1,6 @@
 /**
  * QuickActionsGrid Component
- * 快速操作网格
+ * Quick actions grid
  */
 
 'use client';
@@ -21,25 +21,25 @@ export default function QuickActionsGrid({
 }: QuickActionsGridProps) {
   const actions = [
     {
-      title: 'Super优化',
+      title: 'Super Optimization',
       icon: <DollarSign className="w-6 h-6" />,
       color: 'green',
       onClick: onOpenSuperCalculator,
     },
     {
-      title: 'CGT计算',
+      title: 'CGT Calculator',
       icon: <BarChart3 className="w-6 h-6" />,
       color: 'blue',
       onClick: onOpenCGTCalculator,
     },
     {
-      title: '信托规划',
+      title: 'Trust Planning',
       icon: <Building2 className="w-6 h-6" />,
       color: 'purple',
       onClick: onOpenTrustInfo,
     },
     {
-      title: '遗产规划',
+      title: 'Estate Planning',
       icon: <FileText className="w-6 h-6" />,
       color: 'orange',
       onClick: () => {},
@@ -55,7 +55,7 @@ export default function QuickActionsGrid({
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {actions.map((action, index) => (
           <button

@@ -1,8 +1,8 @@
 /**
  * TaxEnd - Established Professional Dashboard
- * 成熟专业人士仪表板主组件
- * 
- * 针对46-55岁高收入人群的财富管理和税务优化
+ * Main dashboard component for established professionals
+ *
+ * Wealth management and tax optimization for high-income earners aged 46-55
  */
 
 'use client';
@@ -39,12 +39,12 @@ export default function EstablishedProfessionalDashboard() {
                   <Building2 className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">成熟专业人士</h1>
-                  <p className="text-gray-600">Established Professional · 46-55岁 · 高收入者，专注财富积累</p>
+                  <h1 className="text-3xl font-bold text-gray-900">Established Professional</h1>
+                  <p className="text-gray-600">Established Professional · Ages 46-55 · High-income earner focused on wealth accumulation</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">2024-25财年</p>
+                <p className="text-sm text-gray-600">FY 2024-25</p>
                 <p className="text-2xl font-bold text-purple-600">Dashboard</p>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function EstablishedProfessionalDashboard() {
             <section className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                <h2 className="text-xl font-bold text-gray-900">AI 智能建议</h2>
+                <h2 className="text-xl font-bold text-gray-900">AI Smart Suggestions</h2>
               </div>
               <AISuggestionsSection suggestions={dashboard.suggestions} />
             </section>

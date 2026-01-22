@@ -1,6 +1,6 @@
 /**
  * TaxStrategiesSection Component
- * 税务策略部分
+ * Tax strategies section
  */
 
 'use client';
@@ -23,9 +23,9 @@ const complexityColors = {
 };
 
 const complexityLabels = {
-  simple: '简单',
-  moderate: '中等',
-  complex: '复杂',
+  simple: 'Simple',
+  moderate: 'Moderate',
+  complex: 'Complex',
 };
 
 export default function TaxStrategiesSection({
@@ -36,13 +36,13 @@ export default function TaxStrategiesSection({
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">推荐税务策略</h2>
+        <h2 className="text-xl font-bold text-gray-900">Recommended Tax Strategies</h2>
         {selectedGoal && (
           <button
             onClick={onResetFilter}
             className="text-sm text-purple-600 hover:text-purple-700 font-medium"
           >
-            清除筛选
+            Clear Filter
           </button>
         )}
       </div>
@@ -68,7 +68,7 @@ export default function TaxStrategiesSection({
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">潜在节税</span>
+                <span className="text-xs text-gray-500">Potential Savings</span>
                 <span className="font-bold text-green-600">
                   {formatCurrency(strategy.potentialSavings)}
                 </span>

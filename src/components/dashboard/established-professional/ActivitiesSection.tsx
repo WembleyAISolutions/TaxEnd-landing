@@ -1,6 +1,6 @@
 /**
  * ActivitiesSection Component
- * 活动部分
+ * Activities section
  */
 
 'use client';
@@ -9,7 +9,7 @@ import React from 'react';
 import { Activity } from '@/src/types/established-professional';
 import { Calculator, FileUp, FileText, DollarSign, UserCheck, Bell } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { zhCN } from 'date-fns/locale';
+import { enAU } from 'date-fns/locale';
 
 interface ActivitiesSectionProps {
   activities: Activity[];
@@ -36,7 +36,7 @@ const activityColors = {
 export default function ActivitiesSection({ activities }: ActivitiesSectionProps) {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">最近活动</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
 
       <div className="space-y-3">
         {activities.map((activity) => {
@@ -53,9 +53,9 @@ export default function ActivitiesSection({ activities }: ActivitiesSectionProps
                 <h3 className="font-medium text-gray-900 text-sm">{activity.title}</h3>
                 <p className="text-xs text-gray-600">{activity.description}</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {formatDistanceToNow(new Date(activity.timestamp), { 
+                  {formatDistanceToNow(new Date(activity.timestamp), {
                     addSuffix: true,
-                    locale: zhCN 
+                    locale: enAU
                   })}
                 </p>
               </div>

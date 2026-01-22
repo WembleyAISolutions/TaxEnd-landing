@@ -1,6 +1,6 @@
 /**
  * WealthGoalsSelector Component
- * 财富目标选择器
+ * Wealth goals selector
  */
 
 'use client';
@@ -17,32 +17,32 @@ interface WealthGoalsSelectorProps {
 
 const goalConfig: Record<WealthGoal, { title: string; icon: React.ReactNode; color: string }> = {
   wealth_preservation: {
-    title: '财富保值',
+    title: 'Wealth Preservation',
     icon: <Shield className="w-6 h-6" />,
     color: 'blue',
   },
   super_maximization: {
-    title: 'Super最大化',
+    title: 'Super Maximization',
     icon: <TrendingUp className="w-6 h-6" />,
     color: 'green',
   },
   estate_planning: {
-    title: '遗产规划',
+    title: 'Estate Planning',
     icon: <FileText className="w-6 h-6" />,
     color: 'purple',
   },
   tax_minimization: {
-    title: '税务最小化',
+    title: 'Tax Minimization',
     icon: <MinusCircle className="w-6 h-6" />,
     color: 'orange',
   },
   succession_planning: {
-    title: '传承规划',
+    title: 'Succession Planning',
     icon: <Users className="w-6 h-6" />,
     color: 'pink',
   },
   investment_growth: {
-    title: '投资增长',
+    title: 'Investment Growth',
     icon: <BarChart3 className="w-6 h-6" />,
     color: 'teal',
   },
@@ -101,13 +101,13 @@ export default function WealthGoalsSelector({
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">财富目标</h2>
+        <h2 className="text-xl font-bold text-gray-900">Wealth Goals</h2>
         {selectedGoal && (
           <button
             onClick={onResetFilter}
             className="text-sm text-purple-600 hover:text-purple-700 font-medium"
           >
-            清除筛选
+            Clear Filter
           </button>
         )}
       </div>

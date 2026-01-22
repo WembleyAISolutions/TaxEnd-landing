@@ -1,6 +1,6 @@
 /**
  * TasksSection Component
- * 任务部分
+ * Tasks section
  */
 
 'use client';
@@ -24,9 +24,9 @@ const priorityColors = {
 };
 
 const priorityLabels = {
-  high: '高',
-  medium: '中',
-  low: '低',
+  high: 'High',
+  medium: 'Med',
+  low: 'Low',
 };
 
 export default function TasksSection({
@@ -38,9 +38,9 @@ export default function TasksSection({
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">待办任务</h2>
+        <h2 className="text-xl font-bold text-gray-900">To-Do Tasks</h2>
         <span className="text-sm text-gray-600">
-          {completedCount}/{totalCount} 已完成
+          {completedCount}/{totalCount} Completed
         </span>
       </div>
 
@@ -87,7 +87,7 @@ export default function TasksSection({
                 {task.dueDate && (
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
-                    <span>截止: {format(new Date(task.dueDate), 'yyyy-MM-dd')}</span>
+                    <span>Due: {format(new Date(task.dueDate), 'yyyy-MM-dd')}</span>
                   </div>
                 )}
               </div>

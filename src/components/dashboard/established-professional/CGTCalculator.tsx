@@ -1,6 +1,6 @@
 /**
  * CGTCalculator Component
- * CGT计算器模态框
+ * CGT calculator modal
  */
 
 'use client';
@@ -17,12 +17,12 @@ interface CGTCalculatorProps {
 }
 
 const assetTypes: { value: CGTAssetType; label: string }[] = [
-  { value: 'shares', label: '股票' },
-  { value: 'property', label: '房产' },
-  { value: 'cryptocurrency', label: '加密货币' },
-  { value: 'collectibles', label: '收藏品' },
-  { value: 'businessAssets', label: '商业资产' },
-  { value: 'other', label: '其他' },
+  { value: 'shares', label: 'Shares' },
+  { value: 'property', label: 'Property' },
+  { value: 'cryptocurrency', label: 'Cryptocurrency' },
+  { value: 'collectibles', label: 'Collectibles' },
+  { value: 'businessAssets', label: 'Business Assets' },
+  { value: 'other', label: 'Other' },
 ];
 
 export default function CGTCalculator({ profile, onClose, onAddEvent }: CGTCalculatorProps) {
@@ -47,7 +47,7 @@ const handleCalculate = () => {
     {
       id: Date.now().toString(),
       assetType,
-      assetName: assetName || assetTypes.find(t => t.value === assetType)?.label || '资产',
+      assetName: assetName || assetTypes.find(t => t.value === assetType)?.label || 'Asset',
       acquisitionDate: new Date(acquisitionDate),
       disposalDate: new Date(disposalDate),
       costBase: parseFloat(costBase) || 0,
@@ -75,8 +75,8 @@ const handleCalculate = () => {
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">CGT计算器</h2>
-              <p className="text-sm text-gray-600">计算资本利得税义务</p>
+              <h2 className="text-2xl font-bold text-gray-900">CGT Calculator</h2>
+              <p className="text-sm text-gray-600">Calculate your capital gains tax liability</p>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -88,7 +88,7 @@ const handleCalculate = () => {
           {/* Input Form */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">资产类型</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Asset Type</label>
               <select
                 value={assetType}
                 onChange={(e) => setAssetType(e.target.value as CGTAssetType)}
@@ -103,19 +103,19 @@ const handleCalculate = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">资产名称 (可选)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Asset Name (Optional)</label>
               <input
                 type="text"
                 value={assetName}
                 onChange={(e) => setAssetName(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="例如: BHP股票"
+                placeholder="e.g. BHP Shares"
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">购入日期</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Acquisition Date</label>
                 <input
                   type="date"
                   value={acquisitionDate}
@@ -125,7 +125,7 @@ const handleCalculate = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">出售日期</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Disposal Date</label>
                 <input
                   type="date"
                   value={disposalDate}
@@ -137,7 +137,7 @@ const handleCalculate = () => {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">成本基础</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Cost Base</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <input
@@ -151,7 +151,7 @@ const handleCalculate = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">出售所得</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sale Proceeds</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                   <input
@@ -177,10 +177,10 @@ const handleCalculate = () => {
                 <span className="text-2xl">{eligibleForDiscount ? '✅' : '⚠️'}</span>
                 <div>
                   <p className="font-semibold text-gray-900">
-                    {eligibleForDiscount ? '符合50% CGT折扣' : '不符合CGT折扣'}
+                    {eligibleForDiscount ? 'Eligible for 50% CGT Discount' : 'Not Eligible for CGT Discount'}
                   </p>
                   <p className="text-sm text-gray-600">
-                    持有期: {holdingPeriod}天 (需≥365天)
+                    Holding period: {holdingPeriod} days (requires ≥365 days)
                   </p>
                 </div>
               </div>
@@ -193,7 +193,7 @@ const handleCalculate = () => {
             className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
           >
             <TrendingUp className="w-5 h-5" />
-            计算CGT
+            Calculate CGT
           </button>
 
           {/* Results */}
@@ -201,12 +201,12 @@ const handleCalculate = () => {
             <div className="space-y-4 p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border border-blue-200">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-bold text-gray-900">CGT计算结果</h3>
+                <h3 className="text-lg font-bold text-gray-900">CGT Calculation Results</h3>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-white p-4 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">资本收益</p>
+                  <p className="text-sm text-gray-600 mb-1">Capital Gain</p>
                   <p className="text-xl font-bold text-blue-600">
                     {formatCurrency(result.capitalGain)}
                   </p>
@@ -214,7 +214,7 @@ const handleCalculate = () => {
 
                 {result.discountApplied && (
                   <div className="bg-white p-4 rounded-lg">
-                    <p className="text-sm text-gray-600 mb-1">50%折扣后</p>
+                    <p className="text-sm text-gray-600 mb-1">After 50% Discount</p>
                     <p className="text-xl font-bold text-green-600">
                       {formatCurrency(result.taxableGain)}
                     </p>
@@ -222,7 +222,7 @@ const handleCalculate = () => {
                 )}
 
                 <div className="bg-white p-4 rounded-lg md:col-span-2">
-                  <p className="text-sm text-gray-600 mb-1">💰 应缴CGT</p>
+                  <p className="text-sm text-gray-600 mb-1">CGT Payable</p>
                   <p className="text-2xl font-bold text-red-600">
                     {formatCurrency(result.estimatedTax)}
                   </p>
@@ -230,12 +230,12 @@ const handleCalculate = () => {
               </div>
 
               <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-sm font-semibold text-gray-900 mb-2">💡 提示</p>
+                <p className="text-sm font-semibold text-gray-900 mb-2">Tips</p>
                 <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• 考虑用资本损失抵消资本收益</li>
-                  <li>• Super内的CGT税率更优惠</li>
-                  <li>• 持有资产超过12个月可享受50%折扣</li>
-                  <li>• 咨询税务顾问了解更多策略</li>
+                  <li>• Consider using capital losses to offset capital gains</li>
+                  <li>• CGT rates are more favorable within Super</li>
+                  <li>• Hold assets for over 12 months to qualify for 50% discount</li>
+                  <li>• Consult a tax advisor for more strategies</li>
                 </ul>
               </div>
             </div>
