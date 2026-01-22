@@ -11,10 +11,11 @@ import { formatCurrency } from '@/src/lib/tax-calculations';
 import { X, FileText, CheckCircle2, Circle, AlertTriangle, Users, Building, Heart } from 'lucide-react';
 
 interface EstatePlanningSectionProps {
-  profile: RetireeProfile;
+  profile?: RetireeProfile;
   items: EstatePlanningItem[];
   onClose: () => void;
-  onToggleItem: (itemId: string) => void;
+  onUpdateItem?: (itemId: string, status: 'completed' | 'in_progress' | 'not_started') => void;
+  onToggleItem?: (itemId: string) => void;
 }
 
 const categoryIcons = {
@@ -42,11 +43,12 @@ export default function EstatePlanningSection({
   profile,
   items,
   onClose,
+  onUpdateItem,
   onToggleItem,
 }: EstatePlanningSectionProps) {
   const completedCount = items.filter((item) => item.status === 'completed').length;
   const totalCount = items.length;
-  const completionPercentage = Math.round((completedCount / totalCount) * 100);
+  const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   const groupedItems = items.reduce((acc, item) => {
     if (!acc[item.category]) {
@@ -55,6 +57,24 @@ export default function EstatePlanningSection({
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, EstatePlanningItem[]>);
+
+  // Handle item toggle - supports both onUpdateItem and onToggleItem
+  const handleToggle = (item: EstatePlanningItem) => {
+    if (onUpdateItem) {
+      const newStatus = item.status === 'completed' ? 'not_started' : 'completed';
+      onUpdateItem(item.id, newStatus);
+    } else if (onToggleItem) {
+      onToggleItem(item.id);
+    }
+  };
+
+  // Calculate totals only if profile is provided
+  const totalAssets = profile
+    ? profile.accountBasedPensionBalance +
+      profile.nonSuperInvestments +
+      profile.homeValue +
+      (profile.otherAssets || 0)
+    : 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -93,39 +113,36 @@ export default function EstatePlanningSection({
             </p>
           </div>
 
-          {/* Estimated Estate Value */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <p className="text-sm text-gray-600 mb-1">Total Assets</p>
-              <p className="text-xl font-bold text-blue-600">
-                {formatCurrency(
-                  profile.accountBasedPensionBalance +
-                    profile.nonSuperInvestments +
-                    profile.homeValue +
-                    (profile.otherAssets || 0)
-                )}
-              </p>
+          {/* Estimated Estate Value - only show if profile is provided */}
+          {profile && (
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <p className="text-sm text-gray-600 mb-1">Total Assets</p>
+                <p className="text-xl font-bold text-blue-600">
+                  {formatCurrency(totalAssets)}
+                </p>
+              </div>
+              <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                <p className="text-sm text-gray-600 mb-1">Super Death Benefits</p>
+                <p className="text-xl font-bold text-green-600">
+                  {formatCurrency(profile.accountBasedPensionBalance)}
+                </p>
+                <p className="text-xs text-gray-500">Tax-free to dependants</p>
+              </div>
+              <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                <p className="text-sm text-gray-600 mb-1">Non-Super Assets</p>
+                <p className="text-xl font-bold text-purple-600">
+                  {formatCurrency(profile.homeValue + profile.nonSuperInvestments)}
+                </p>
+              </div>
             </div>
-            <div className="p-4 bg-green-50 rounded-xl border border-green-200">
-              <p className="text-sm text-gray-600 mb-1">Super Death Benefits</p>
-              <p className="text-xl font-bold text-green-600">
-                {formatCurrency(profile.accountBasedPensionBalance)}
-              </p>
-              <p className="text-xs text-gray-500">Tax-free to dependants</p>
-            </div>
-            <div className="p-4 bg-purple-50 rounded-xl border border-purple-200">
-              <p className="text-sm text-gray-600 mb-1">Non-Super Assets</p>
-              <p className="text-xl font-bold text-purple-600">
-                {formatCurrency(profile.homeValue + profile.nonSuperInvestments)}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Checklist by Category */}
           {Object.entries(groupedItems).map(([category, categoryItems]) => {
-            const Icon = categoryIcons[category as keyof typeof categoryIcons];
-            const gradientColor = categoryColors[category as keyof typeof categoryColors];
-            const bgColor = categoryBgColors[category as keyof typeof categoryBgColors];
+            const Icon = categoryIcons[category as keyof typeof categoryIcons] || FileText;
+            const gradientColor = categoryColors[category as keyof typeof categoryColors] || 'from-gray-500 to-gray-600';
+            const bgColor = categoryBgColors[category as keyof typeof categoryBgColors] || 'bg-gray-50 border-gray-200';
             const categoryCompleted = categoryItems.filter((i) => i.status === 'completed').length;
 
             return (
@@ -152,7 +169,7 @@ export default function EstatePlanningSection({
                     >
                       <div className="flex items-start gap-3">
                         <button
-                          onClick={() => onToggleItem(item.id)}
+                          onClick={() => handleToggle(item)}
                           className="mt-0.5 flex-shrink-0"
                         >
                           {item.status === 'completed' ? (
