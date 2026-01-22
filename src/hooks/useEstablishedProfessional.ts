@@ -1,6 +1,6 @@
 /**
  * TaxEnd - Established Professional Hook
- * 成熟专业人士仪表板状态管理Hook
+ * State management hook for established professional dashboard
  */
 
 'use client';
@@ -29,8 +29,8 @@ function generateSampleStrategies(): TaxStrategy[] {
   return [
     {
       id: '1',
-      title: '最大化优惠性Super供款',
-      description: '在$30,000年度限额内最大化税前Super供款，降低应税收入',
+      title: 'Maximize Concessional Super Contributions',
+      description: 'Maximize pre-tax Super contributions within $30,000 annual cap to reduce taxable income',
       category: 'concessional_contributions',
       potentialSavings: 8250,
       complexity: 'simple',
@@ -38,8 +38,8 @@ function generateSampleStrategies(): TaxStrategy[] {
     },
     {
       id: '2',
-      title: '资本利得税收获策略',
-      description: '战略性地实现资本损失以抵消资本收益',
+      title: 'Capital Gains Tax Harvesting Strategy',
+      description: 'Strategically realize capital losses to offset capital gains',
       category: 'capital_gains_planning',
       potentialSavings: 5000,
       complexity: 'moderate',
@@ -47,8 +47,8 @@ function generateSampleStrategies(): TaxStrategy[] {
     },
     {
       id: '3',
-      title: '家族信托分配',
-      description: '通过家族信托优化收入分配，降低整体税负',
+      title: 'Family Trust Distribution',
+      description: 'Optimize income distribution through family trust to reduce overall tax burden',
       category: 'trust_structures',
       potentialSavings: 15000,
       complexity: 'complex',
@@ -56,8 +56,8 @@ function generateSampleStrategies(): TaxStrategy[] {
     },
     {
       id: '4',
-      title: 'Super分割供款',
-      description: '将Super供款分割给收入较低的配偶',
+      title: 'Super Splitting Contributions',
+      description: 'Split Super contributions to lower-income spouse',
       category: 'super_splitting',
       potentialSavings: 3000,
       complexity: 'moderate',
@@ -71,8 +71,8 @@ function generateSampleSuggestions(): AISuggestion[] {
   return [
     {
       id: '1',
-      title: '最大化Super供款',
-      description: '您还有$15,000的优惠性供款额度未使用，建议在财年结束前补足',
+      title: 'Maximize Super Contributions',
+      description: 'You still have $15,000 unused concessional contribution cap, recommend topping up before end of FY',
       priority: 'high',
       potentialSavings: 4125,
       category: 'optimization',
@@ -81,8 +81,8 @@ function generateSampleSuggestions(): AISuggestion[] {
     },
     {
       id: '2',
-      title: '考虑设立家族信托',
-      description: '根据您的收入水平，家族信托可能帮助您优化税务结构',
+      title: 'Consider Setting Up Family Trust',
+      description: 'Based on your income level, a family trust may help optimize your tax structure',
       priority: 'medium',
       potentialSavings: 12000,
       category: 'planning',
@@ -90,8 +90,8 @@ function generateSampleSuggestions(): AISuggestion[] {
     },
     {
       id: '3',
-      title: '审查CGT事件时机',
-      description: '您有部分投资持有已超过12个月，符合50%CGT折扣条件',
+      title: 'Review CGT Event Timing',
+      description: 'Some of your investments have been held over 12 months, eligible for 50% CGT discount',
       priority: 'medium',
       potentialSavings: 8500,
       category: 'optimization',
@@ -99,8 +99,8 @@ function generateSampleSuggestions(): AISuggestion[] {
     },
     {
       id: '4',
-      title: '配偶Super分割',
-      description: '将部分Super供款分割给配偶可获得税务优惠',
+      title: 'Spouse Super Splitting',
+      description: 'Splitting some Super contributions to spouse can provide tax benefits',
       priority: 'low',
       potentialSavings: 2500,
       category: 'planning',
@@ -114,8 +114,8 @@ function generateSampleTasks(): TaskItem[] {
   return [
     {
       id: '1',
-      title: '审查Super供款策略',
-      description: '评估当前财年的优惠性和非优惠性供款计划',
+      title: 'Review Super Contribution Strategy',
+      description: 'Evaluate concessional and non-concessional contribution plans for current FY',
       dueDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
       priority: 'high',
       category: 'review',
@@ -123,8 +123,8 @@ function generateSampleTasks(): TaskItem[] {
     },
     {
       id: '2',
-      title: '整理投资组合文档',
-      description: '准备所有投资的购买记录和股息声明',
+      title: 'Organize Investment Portfolio Documents',
+      description: 'Prepare purchase records and dividend statements for all investments',
       dueDate: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000),
       priority: 'medium',
       category: 'document',
@@ -132,8 +132,8 @@ function generateSampleTasks(): TaskItem[] {
     },
     {
       id: '3',
-      title: '计算CGT义务',
-      description: '计算本财年所有资本利得和损失',
+      title: 'Calculate CGT Obligations',
+      description: 'Calculate all capital gains and losses for this FY',
       dueDate: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
       priority: 'medium',
       category: 'calculation',
@@ -141,8 +141,8 @@ function generateSampleTasks(): TaskItem[] {
     },
     {
       id: '4',
-      title: '咨询信托设立事宜',
-      description: '与税务顾问讨论家族信托的适用性',
+      title: 'Consult on Trust Setup',
+      description: 'Discuss family trust suitability with tax advisor',
       dueDate: new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000),
       priority: 'low',
       category: 'consultation',
@@ -156,22 +156,22 @@ function generateSampleActivities(): Activity[] {
   return [
     {
       id: '1',
-      title: '完成税务计算',
-      description: '2024-25财年收入税计算已完成',
+      title: 'Tax Calculation Completed',
+      description: 'FY 2024-25 income tax calculation completed',
       type: 'calculation',
       timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000),
     },
     {
       id: '2',
-      title: '上传投资报告',
-      description: '股票投资年度报告已上传',
+      title: 'Investment Report Uploaded',
+      description: 'Annual stock investment report uploaded',
       type: 'document_upload',
       timestamp: new Date(now.getTime() - 24 * 60 * 60 * 1000),
     },
     {
       id: '3',
-      title: 'Super供款提醒',
-      description: '距离财年结束还有3个月',
+      title: 'Super Contribution Reminder',
+      description: '3 months until end of financial year',
       type: 'alert',
       timestamp: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000),
     },
