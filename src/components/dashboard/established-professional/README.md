@@ -1,8 +1,8 @@
-# Established Professional Dashboard - 成熟专业人士仪表板
+# Established Professional Dashboard
 
-## 📋 Overview | 概览
+## Overview
 
-针对46-55岁高收入人群的财富管理和税务优化仪表板，提供全面的税务策略、Super供款计算、CGT计算和信托规划功能。
+A wealth management and tax optimization dashboard for high-income earners aged 46-55, providing comprehensive tax strategies, Super contribution calculations, CGT calculations, and trust planning features.
 
 **Target Audience**: Established Professionals (46-55 years old)
 - High income earners
@@ -11,76 +11,76 @@
 - Estate planning
 - Tax optimization
 
-## 🏗️ Architecture | 架构
+## Architecture
 
 ```
 src/
 ├── types/
-│   └── established-professional.ts      # TypeScript类型定义
+│   └── established-professional.ts      # TypeScript type definitions
 ├── lib/
-│   └── tax-calculations.ts              # 税务计算工具函数
+│   └── tax-calculations.ts              # Tax calculation utility functions
 ├── hooks/
-│   └── useEstablishedProfessional.ts    # 自定义React Hook
+│   └── useEstablishedProfessional.ts    # Custom React Hook
 └── components/
     └── dashboard/
         └── established-professional/
-            ├── EstablishedProfessionalDashboard.tsx  # 主仪表板
-            ├── WealthGoalsSelector.tsx               # 财富目标选择器
-            ├── QuickActionsGrid.tsx                  # 快速操作网格
-            ├── NetWorthSummary.tsx                   # 净值摘要
-            ├── TaxStrategiesSection.tsx              # 税务策略部分
-            ├── AISuggestionsSection.tsx              # AI建议部分
-            ├── TasksSection.tsx                      # 任务管理
-            ├── ActivitiesSection.tsx                 # 活动时间线
-            ├── SuperCalculator.tsx                   # Super供款计算器
-            ├── CGTCalculator.tsx                     # CGT计算器
-            ├── TrustInfoModal.tsx                    # 信托信息模态框
-            ├── index.ts                              # Barrel导出
-            └── README.md                             # 本文档
+            ├── EstablishedProfessionalDashboard.tsx  # Main dashboard
+            ├── WealthGoalsSelector.tsx               # Wealth goals selector
+            ├── QuickActionsGrid.tsx                  # Quick actions grid
+            ├── NetWorthSummary.tsx                   # Net worth summary
+            ├── TaxStrategiesSection.tsx              # Tax strategies section
+            ├── AISuggestionsSection.tsx              # AI suggestions section
+            ├── TasksSection.tsx                      # Task management
+            ├── ActivitiesSection.tsx                 # Activity timeline
+            ├── SuperCalculator.tsx                   # Super contribution calculator
+            ├── CGTCalculator.tsx                     # CGT calculator
+            ├── TrustInfoModal.tsx                    # Trust information modal
+            ├── index.ts                              # Barrel export
+            └── README.md                             # This document
 ```
 
-## 🚀 Features | 功能特性
+## Features
 
-### 1. **财富目标管理** (Wealth Goals Management)
-- 6种财富目标选择：财富保值、Super最大化、遗产规划、税务最小化、传承规划、投资增长
-- 根据选择的目标动态筛选推荐策略
+### 1. Wealth Goals Management
+- 6 wealth goal options: Wealth Preservation, Super Maximization, Estate Planning, Tax Minimization, Succession Planning, Investment Growth
+- Dynamically filter recommended strategies based on selected goal
 
-### 2. **税务策略推荐** (Tax Strategies)
-- 优惠性Super供款策略
-- 资本利得税收获策略
-- 家族信托分配
-- Super分割供款
-- 基于复杂度和潜在节税的策略评估
+### 2. Tax Strategies
+- Concessional Super contribution strategies
+- Capital gains tax harvesting strategies
+- Family trust distribution
+- Super splitting contributions
+- Strategy evaluation based on complexity and potential tax savings
 
-### 3. **Super供款计算器** (Super Contribution Calculator)
-- 2024-25财年最新限额：优惠性$30,000、非优惠性$120,000
-- 11.5% SG雇主供款自动计算
-- 税务节省估算
-- 10年退休余额预测（7%年回报）
+### 3. Super Contribution Calculator
+- FY 2024-25 latest limits: Concessional $30,000, Non-concessional $120,000
+- 11.5% SG employer contribution auto-calculation
+- Tax savings estimation
+- 10-year retirement balance projection (7% annual return)
 
-### 4. **CGT计算器** (CGT Calculator)
-- 支持多种资产类型：股票、房产、加密货币、收藏品、商业资产
-- 自动判断50% CGT折扣资格（持有≥365天）
-- 基于边际税率的CGT估算
+### 4. CGT Calculator
+- Supports multiple asset types: Shares, Property, Cryptocurrency, Collectibles, Business Assets
+- Automatic 50% CGT discount eligibility check (holding period ≥365 days)
+- CGT estimation based on marginal tax rate
 
-### 5. **AI智能建议** (AI Suggestions)
-- 基于优先级的智能建议（高/中/低）
-- 潜在节税金额显示
-- 行动建议和截止日期
+### 5. AI Smart Suggestions
+- Priority-based smart suggestions (High/Medium/Low)
+- Potential tax savings display
+- Action recommendations and due dates
 
-### 6. **任务管理** (Task Management)
-- 优先级标记（高/中/低）
-- 任务完成状态追踪
-- 截止日期提醒
+### 6. Task Management
+- Priority marking (High/Medium/Low)
+- Task completion status tracking
+- Due date reminders
 
-### 7. **信托规划信息** (Trust Planning)
-- 全权信托、单位信托、混合信托介绍
-- 税务优势和成本分析
-- 合规要求说明
+### 7. Trust Planning Information
+- Discretionary Trust, Unit Trust, Hybrid Trust introduction
+- Tax advantages and cost analysis
+- Compliance requirements explanation
 
-## 💻 Usage | 使用方法
+## Usage
 
-### Basic Implementation | 基本实现
+### Basic Implementation
 
 ```tsx
 import { EstablishedProfessionalDashboard } from '@/src/components/dashboard/established-professional';
@@ -90,7 +90,7 @@ export default function DemoPage() {
 }
 ```
 
-### With Next.js App Router | Next.js App Router
+### With Next.js App Router
 
 Create a new route at `app/demo/established-professional/page.tsx`:
 
@@ -106,7 +106,7 @@ export default function EstablishedProfessionalPage() {
 }
 ```
 
-### Custom Hook Usage | 自定义Hook使用
+### Custom Hook Usage
 
 ```tsx
 import { useEstablishedProfessional } from '@/src/hooks/useEstablishedProfessional';
@@ -127,9 +127,9 @@ function MyComponent() {
 }
 ```
 
-## 🧮 Tax Calculations | 税务计算
+## Tax Calculations
 
-### Australian Tax Rates 2024-25 | 澳洲税率
+### Australian Tax Rates 2024-25
 
 ```typescript
 Tax Brackets:
@@ -141,7 +141,7 @@ Tax Brackets:
 + Medicare Levy: 2%
 ```
 
-### Super Contribution Limits | Super供款限额
+### Super Contribution Limits
 
 ```typescript
 Concessional Cap: $30,000
@@ -150,48 +150,48 @@ Total Super Balance Cap: $1,900,000
 Superannuation Guarantee Rate: 11.5%
 ```
 
-### CGT Discount | CGT折扣
+### CGT Discount
 
 ```typescript
 Holding Period ≥ 365 days: 50% discount
 Holding Period < 365 days: No discount
 ```
 
-## 🎨 Styling | 样式
+## Styling
 
-使用 **Tailwind CSS** 进行样式设计：
+Uses **Tailwind CSS** for styling:
 
-- 响应式设计：支持移动端、平板和桌面
-- 渐变色背景：`from-purple-50 via-blue-50 to-indigo-50`
-- 阴影和圆角：`shadow-lg` 和 `rounded-2xl`
-- 交互动画：`transition-all` 和 `hover:scale-105`
+- Responsive design: Supports mobile, tablet, and desktop
+- Gradient backgrounds: `from-purple-50 via-blue-50 to-indigo-50`
+- Shadows and rounded corners: `shadow-lg` and `rounded-2xl`
+- Interactive animations: `transition-all` and `hover:scale-105`
 
-## 🔧 Customization | 自定义
+## Customization
 
-### Modify Profile Data | 修改用户数据
+### Modify Profile Data
 
-在 `useEstablishedProfessional.ts` 中修改初始数据：
+Modify initial data in `useEstablishedProfessional.ts`:
 
 ```typescript
 profile: {
   id: '1',
-  annualIncome: 200000,      // 修改年收入
-  superBalance: 500000,       // 修改Super余额
+  annualIncome: 200000,      // Modify annual income
+  superBalance: 500000,       // Modify Super balance
   investmentPortfolioValue: 300000,
   propertyValue: 1200000,
   // ...
 }
 ```
 
-### Add New Strategies | 添加新策略
+### Add New Strategies
 
-在 `src/hooks/useEstablishedProfessional.ts` 的 `generateSampleStrategies()` 函数中添加：
+Add to the `generateSampleStrategies()` function in `src/hooks/useEstablishedProfessional.ts`:
 
 ```typescript
 {
   id: '5',
-  title: '您的新策略',
-  description: '策略描述',
+  title: 'Your New Strategy',
+  description: 'Strategy description',
   category: 'concessional_contributions',
   potentialSavings: 5000,
   complexity: 'moderate',
@@ -199,17 +199,17 @@ profile: {
 }
 ```
 
-### Customize Colors | 自定义颜色
+### Customize Colors
 
-在各组件中修改颜色类：
+Modify color classes in components:
 
 ```tsx
-// 从紫色改为绿色主题
+// Change from purple to green theme
 className="bg-purple-600" → className="bg-green-600"
 className="text-purple-600" → className="text-green-600"
 ```
 
-## 📊 Data Flow | 数据流
+## Data Flow
 
 ```
 User Interaction
@@ -225,19 +225,19 @@ Tax Calculations (lib/tax-calculations.ts)
 UI Re-render
 ```
 
-## 🧪 Testing | 测试
+## Testing
 
-### Manual Testing Checklist | 手动测试清单
+### Manual Testing Checklist
 
-- [ ] 财富目标选择和筛选功能
-- [ ] Super计算器准确性
-- [ ] CGT计算器准确性
-- [ ] 任务完成状态切换
-- [ ] 响应式设计（移动/平板/桌面）
-- [ ] 模态框打开/关闭
-- [ ] 数据格式化（货币、日期）
+- [ ] Wealth goal selection and filtering functionality
+- [ ] Super calculator accuracy
+- [ ] CGT calculator accuracy
+- [ ] Task completion status toggle
+- [ ] Responsive design (mobile/tablet/desktop)
+- [ ] Modal open/close
+- [ ] Data formatting (currency, dates)
 
-### Test Data | 测试数据
+### Test Data
 
 ```typescript
 // High Income Scenario
@@ -249,17 +249,16 @@ Total Net Worth: $2,000,000
 Estimated Tax: ~$67,000
 ```
 
-## 🌐 Internationalization | 国际化
+## Internationalization
 
-当前支持：
-- ✅ 中文 (简体)
-- ✅ English (部分)
+Current support:
+- ✅ English
 
-扩展支持可使用 `next-intl` 或类似库。
+For additional language support, use `next-intl` or similar libraries.
 
-## 📱 Responsive Design | 响应式设计
+## Responsive Design
 
-### Breakpoints | 断点
+### Breakpoints
 
 ```css
 sm: 640px   /* Mobile landscape */
@@ -268,31 +267,31 @@ lg: 1024px  /* Desktop */
 xl: 1280px  /* Large desktop */
 ```
 
-### Grid Layouts | 网格布局
+### Grid Layouts
 
 ```tsx
-// 移动端1列，平板2列，桌面3列
+// 1 column on mobile, 2 columns on tablet, 3 columns on desktop
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 ```
 
-## 🚧 Known Issues | 已知问题
+## Known Issues
 
-1. **TypeScript Errors**: 一些 `any` 类型错误是由于开发环境配置，运行时不影响
-2. **Date Formatting**: `date-fns` 的中文locale可能需要额外配置
-3. **Browser Compatibility**: 需要现代浏览器支持 (Chrome 90+, Firefox 88+, Safari 14+)
+1. **TypeScript Errors**: Some `any` type errors are due to development environment configuration, do not affect runtime
+2. **Date Formatting**: `date-fns` locale may require additional configuration
+3. **Browser Compatibility**: Requires modern browser support (Chrome 90+, Firefox 88+, Safari 14+)
 
-## 🔄 Future Enhancements | 未来增强
+## Future Enhancements
 
-- [ ] 后端API集成
-- [ ] 数据持久化（LocalStorage/Database）
-- [ ] 导出PDF报告
-- [ ] 邮件提醒功能
-- [ ] 多用户支持
-- [ ] 历史记录追踪
-- [ ] 更多计算器（负扣税、股息抵免等）
-- [ ] 图表可视化（Recharts集成）
+- [ ] Backend API integration
+- [ ] Data persistence (LocalStorage/Database)
+- [ ] Export PDF reports
+- [ ] Email reminder functionality
+- [ ] Multi-user support
+- [ ] History tracking
+- [ ] More calculators (negative gearing, dividend franking, etc.)
+- [ ] Chart visualization (Recharts integration)
 
-## 📚 Dependencies | 依赖
+## Dependencies
 
 ```json
 {
@@ -303,35 +302,35 @@ xl: 1280px  /* Large desktop */
 }
 ```
 
-## 👨‍💻 Development | 开发
+## Development
 
-### Run Development Server | 运行开发服务器
+### Run Development Server
 
 ```bash
 cd /Users/wayne/Documents/TaxEnd-landing
 npm run dev
 ```
 
-访问: `http://localhost:3000`
+Visit: `http://localhost:3000`
 
-### Build for Production | 生产构建
+### Build for Production
 
 ```bash
 npm run build
 npm run start
 ```
 
-## 📄 License | 许可证
+## License
 
 All rights reserved. TaxEnd © 2026
 
-## 🤝 Contributing | 贡献
+## Contributing
 
-如需贡献或报告问题，请联系开发团队。
+To contribute or report issues, please contact the development team.
 
 ---
 
-**Created by**: Claude (Anthropic)  
-**Date**: 2026年1月8日  
-**Version**: 1.0.0  
+**Created by**: Claude (Anthropic)
+**Date**: January 8, 2026
+**Version**: 1.0.0
 **Project**: TaxEnd - Established Professional Dashboard

@@ -1,6 +1,5 @@
 /**
  * Established Professional Dashboard - Barrel Export
- * 成熟专业人士仪表板 - 统一导出
  */
 
 export { default as EstablishedProfessionalDashboard } from './EstablishedProfessionalDashboard';
