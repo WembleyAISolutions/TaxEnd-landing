@@ -18,6 +18,8 @@ export interface RetireeProfile {
   superBalance: number;
   accountBasedPensionBalance: number;
   investmentPortfolioValue: number;
+  nonSuperInvestments: number;
+  cashSavings?: number;
   homeValue: number;
   otherAssets: number;
   hasSpouse: boolean;
@@ -129,6 +131,11 @@ export interface CentrelinkAssessment {
   incomeTest: CentrelinkIncomeTest;
   resultingPayment: number;
   paymentFrequency: 'fortnightly' | 'annual';
+  // Simplified accessor properties
+  totalAssessableAssets: number;
+  deemedIncome: number;
+  assetsOverThreshold: number;
+  assetsTestReduction: number;
 }
 
 export interface CentrelinkAssetsTest {
@@ -230,21 +237,21 @@ export const AGE_PENSION_RATES_2024_25 = {
 };
 
 export const ASSETS_TEST_THRESHOLDS_2024_25 = {
-  single_homeowner: {
+  singleHomeowner: {
     fullPension: 301750,
-    partPension: 695500,
+    cutOff: 695500,
   },
-  single_non_homeowner: {
+  singleNonHomeowner: {
     fullPension: 543750,
-    partPension: 937500,
+    cutOff: 937500,
   },
-  couple_homeowner: {
+  coupleHomeowner: {
     fullPension: 451500,
-    partPension: 1045500,
+    cutOff: 1045500,
   },
-  couple_non_homeowner: {
+  coupleNonHomeowner: {
     fullPension: 693500,
-    partPension: 1287500,
+    cutOff: 1287500,
   },
 };
 
@@ -260,24 +267,18 @@ export const INCOME_TEST_THRESHOLDS_2024_25 = {
 };
 
 export const DEEMING_RATES_2024_25 = {
-  single: {
-    threshold: 60400,
-    lowerRate: 0.0025, // 0.25%
-    upperRate: 0.0225, // 2.25%
-  },
-  couple: {
-    threshold: 100200,
-    lowerRate: 0.0025,
-    upperRate: 0.0225,
-  },
+  singleThreshold: 60400,
+  coupleThreshold: 100200,
+  lowerRate: 0.0025, // 0.25%
+  higherRate: 0.0225, // 2.25%
 };
 
-export const MINIMUM_DRAWDOWN_RATES_2024_25: Record<string, number> = {
-  'under_65': 0.04,
-  '65_74': 0.05,
-  '75_79': 0.06,
-  '80_84': 0.07,
-  '85_89': 0.09,
-  '90_94': 0.11,
-  '95_plus': 0.14,
+export const MINIMUM_DRAWDOWN_RATES_2024_25 = {
+  under65: 0.04,
+  age65to74: 0.05,
+  age75to79: 0.06,
+  age80to84: 0.07,
+  age85to89: 0.09,
+  age90to94: 0.11,
+  age95plus: 0.14,
 };

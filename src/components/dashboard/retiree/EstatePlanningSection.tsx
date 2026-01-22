@@ -6,7 +6,7 @@
 'use client';
 
 import React from 'react';
-import { RetireeProfile, EstatePlanningItem, ESTATE_PLANNING_CHECKLIST } from '@/src/types/retiree';
+import { RetireeProfile, EstatePlanningItem } from '@/src/types/retiree';
 import { formatCurrency } from '@/src/lib/tax-calculations';
 import { X, FileText, CheckCircle2, Circle, AlertTriangle, Users, Building, Heart } from 'lucide-react';
 
@@ -44,7 +44,7 @@ export default function EstatePlanningSection({
   onClose,
   onToggleItem,
 }: EstatePlanningSectionProps) {
-  const completedCount = items.filter((item) => item.isCompleted).length;
+  const completedCount = items.filter((item) => item.status === 'completed').length;
   const totalCount = items.length;
   const completionPercentage = Math.round((completedCount / totalCount) * 100);
 
@@ -126,7 +126,7 @@ export default function EstatePlanningSection({
             const Icon = categoryIcons[category as keyof typeof categoryIcons];
             const gradientColor = categoryColors[category as keyof typeof categoryColors];
             const bgColor = categoryBgColors[category as keyof typeof categoryBgColors];
-            const categoryCompleted = categoryItems.filter((i) => i.isCompleted).length;
+            const categoryCompleted = categoryItems.filter((i) => i.status === 'completed').length;
 
             return (
               <div key={category} className={`p-4 rounded-xl border ${bgColor}`}>
@@ -147,7 +147,7 @@ export default function EstatePlanningSection({
                     <div
                       key={item.id}
                       className={`p-3 bg-white rounded-lg border ${
-                        item.isCompleted ? 'border-green-200' : 'border-gray-200'
+                        item.status === 'completed' ? 'border-green-200' : 'border-gray-200'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -155,7 +155,7 @@ export default function EstatePlanningSection({
                           onClick={() => onToggleItem(item.id)}
                           className="mt-0.5 flex-shrink-0"
                         >
-                          {item.isCompleted ? (
+                          {item.status === 'completed' ? (
                             <CheckCircle2 className="w-5 h-5 text-green-600" />
                           ) : (
                             <Circle className="w-5 h-5 text-gray-400 hover:text-gray-600" />
@@ -164,13 +164,13 @@ export default function EstatePlanningSection({
                         <div className="flex-1">
                           <h4
                             className={`font-medium ${
-                              item.isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'
+                              item.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'
                             }`}
                           >
                             {item.title}
                           </h4>
                           <p className="text-sm text-gray-600">{item.description}</p>
-                          {item.priority === 'high' && !item.isCompleted && (
+                          {item.priority === 'high' && !item.status === 'completed' && (
                             <span className="inline-flex items-center gap-1 mt-1 text-xs text-red-600">
                               <AlertTriangle className="w-3 h-3" />
                               High Priority

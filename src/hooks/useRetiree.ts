@@ -231,6 +231,8 @@ export function useRetiree() {
       superBalance: 180000,
       accountBasedPensionBalance: 620000,
       investmentPortfolioValue: 150000,
+      nonSuperInvestments: 150000,
+      cashSavings: 25000,
       homeValue: 1200000,
       otherAssets: 50000,
       hasSpouse: true,
@@ -285,11 +287,11 @@ export function useRetiree() {
 
     const assetsThresholds = hasSpouse
       ? isHomeowner
-        ? ASSETS_TEST_THRESHOLDS_2024_25.couple_homeowner
-        : ASSETS_TEST_THRESHOLDS_2024_25.couple_non_homeowner
+        ? ASSETS_TEST_THRESHOLDS_2024_25.coupleHomeowner
+        : ASSETS_TEST_THRESHOLDS_2024_25.coupleNonHomeowner
       : isHomeowner
-      ? ASSETS_TEST_THRESHOLDS_2024_25.single_homeowner
-      : ASSETS_TEST_THRESHOLDS_2024_25.single_non_homeowner;
+      ? ASSETS_TEST_THRESHOLDS_2024_25.singleHomeowner
+      : ASSETS_TEST_THRESHOLDS_2024_25.singleNonHomeowner;
 
     const isWithinAssetsThreshold = totalAssessableAssets <= assetsThresholds.fullPension;
     const assetsReduction = Math.max(
@@ -306,7 +308,7 @@ export function useRetiree() {
     const assetsTestResult: AssetsTestResult = {
       totalAssessableAssets,
       assetsTestThreshold: assetsThresholds.fullPension,
-      assetsTestUpperLimit: assetsThresholds.partPension,
+      assetsTestUpperLimit: assetsThresholds.cutOff,
       isWithinThreshold: isWithinAssetsThreshold,
       reductionAmount: assetsReduction,
       pensionUnderAssetsTest,
@@ -314,12 +316,12 @@ export function useRetiree() {
 
     // Income Test (with deeming)
     const deemingThreshold = hasSpouse
-      ? DEEMING_RATES_2024_25.couple.threshold
-      : DEEMING_RATES_2024_25.single.threshold;
+      ? DEEMING_RATES_2024_25.coupleThreshold
+      : DEEMING_RATES_2024_25.singleThreshold;
 
     const financialAssets = accountBasedPensionBalance + investmentPortfolioValue;
-    const deemedIncomeLower = Math.min(financialAssets, deemingThreshold) * DEEMING_RATES_2024_25.single.lowerRate;
-    const deemedIncomeUpper = Math.max(0, financialAssets - deemingThreshold) * DEEMING_RATES_2024_25.single.upperRate;
+    const deemedIncomeLower = Math.min(financialAssets, deemingThreshold) * DEEMING_RATES_2024_25.lowerRate;
+    const deemedIncomeUpper = Math.max(0, financialAssets - deemingThreshold) * DEEMING_RATES_2024_25.higherRate;
     const totalDeemedIncome = (deemedIncomeLower + deemedIncomeUpper) * 26; // Annual
 
     const incomeThreshold = hasSpouse
@@ -332,7 +334,7 @@ export function useRetiree() {
     const incomeTestResult: IncomeTestResult = {
       totalAssessableIncome: totalDeemedIncome,
       incomeTestThreshold: incomeThreshold,
-      deemingRate: DEEMING_RATES_2024_25.single.upperRate,
+      deemingRate: DEEMING_RATES_2024_25.higherRate,
       deemedIncome: totalDeemedIncome,
       reductionAmount: incomeReduction,
       pensionUnderIncomeTest,
@@ -349,7 +351,7 @@ export function useRetiree() {
     const eligibility: AgePensionEligibility = {
       isEligibleByAge,
       isEligibleByResidency,
-      isEligibleByAssets: totalAssessableAssets < assetsThresholds.partPension,
+      isEligibleByAssets: totalAssessableAssets < assetsThresholds.cutOff,
       isEligibleByIncome: pensionUnderIncomeTest > 0,
       overallEligible: isEligibleByAge && estimatedAnnualPayment > 0,
       estimatedFortnightlyPayment: estimatedAnnualPayment / 26,
@@ -368,13 +370,13 @@ export function useRetiree() {
     const { age, accountBasedPensionBalance } = state.profile;
 
     let rate: number;
-    if (age < 65) rate = MINIMUM_DRAWDOWN_RATES_2024_25['under_65'];
-    else if (age <= 74) rate = MINIMUM_DRAWDOWN_RATES_2024_25['65_74'];
-    else if (age <= 79) rate = MINIMUM_DRAWDOWN_RATES_2024_25['75_79'];
-    else if (age <= 84) rate = MINIMUM_DRAWDOWN_RATES_2024_25['80_84'];
-    else if (age <= 89) rate = MINIMUM_DRAWDOWN_RATES_2024_25['85_89'];
-    else if (age <= 94) rate = MINIMUM_DRAWDOWN_RATES_2024_25['90_94'];
-    else rate = MINIMUM_DRAWDOWN_RATES_2024_25['95_plus'];
+    if (age < 65) rate = MINIMUM_DRAWDOWN_RATES_2024_25.under65;
+    else if (age <= 74) rate = MINIMUM_DRAWDOWN_RATES_2024_25.age65to74;
+    else if (age <= 79) rate = MINIMUM_DRAWDOWN_RATES_2024_25.age75to79;
+    else if (age <= 84) rate = MINIMUM_DRAWDOWN_RATES_2024_25.age80to84;
+    else if (age <= 89) rate = MINIMUM_DRAWDOWN_RATES_2024_25.age85to89;
+    else if (age <= 94) rate = MINIMUM_DRAWDOWN_RATES_2024_25.age90to94;
+    else rate = MINIMUM_DRAWDOWN_RATES_2024_25.age95plus;
 
     const minimumAmount = accountBasedPensionBalance * rate;
     const recommendedDrawdown = minimumAmount * 1.2; // 20% above minimum
@@ -399,6 +401,8 @@ export function useRetiree() {
   const calculateCentrelink = useCallback((): CentrelinkAssessment => {
     const agePension = calculateAgePension();
 
+    const assetsOverThreshold = Math.max(0, agePension.assetsTestResult.totalAssessableAssets - agePension.assetsTestResult.assetsTestThreshold);
+
     const assessment: CentrelinkAssessment = {
       assetsTest: {
         homeowner: state.profile.isHomeowner,
@@ -422,6 +426,11 @@ export function useRetiree() {
       },
       resultingPayment: agePension.estimatedAnnualPayment,
       paymentFrequency: 'annual',
+      // Simplified accessor properties
+      totalAssessableAssets: agePension.assetsTestResult.totalAssessableAssets,
+      deemedIncome: agePension.incomeTestResult.deemedIncome,
+      assetsOverThreshold,
+      assetsTestReduction: agePension.assetsTestResult.reductionAmount,
     };
 
     setState((prev) => ({ ...prev, centrelinkAssessment: assessment }));

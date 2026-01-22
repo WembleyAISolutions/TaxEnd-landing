@@ -6,9 +6,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RetireeProfile, PensionComparison, MINIMUM_DRAWDOWN_RATES_2024_25 } from '@/src/types/retiree';
+import { RetireeProfile, MINIMUM_DRAWDOWN_RATES_2024_25 } from '@/src/types/retiree';
 import { formatCurrency } from '@/src/lib/tax-calculations';
 import { X, BarChart3, TrendingUp, TrendingDown, Percent, Calendar } from 'lucide-react';
+
+interface DrawdownProjection {
+  strategy: string;
+  drawdownRate: number;
+  annualIncome: number;
+  balanceAfter10Years: number;
+  totalDrawnOver10Years: number;
+  yearlyProjection: { year: number; balance: number; drawdown: number }[];
+}
 
 interface PensionComparisonToolProps {
   profile: RetireeProfile;
@@ -34,7 +43,7 @@ export default function PensionComparisonTool({
   };
 
   // Calculate projection for a given drawdown rate
-  const calculateProjection = (drawdownRate: number): PensionComparison => {
+  const calculateProjection = (drawdownRate: number): DrawdownProjection => {
     let balance = profile.accountBasedPensionBalance;
     let totalDrawn = 0;
     const yearlyData: { year: number; balance: number; drawdown: number }[] = [];
