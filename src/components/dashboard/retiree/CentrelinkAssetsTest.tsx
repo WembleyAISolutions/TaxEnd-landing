@@ -33,11 +33,11 @@ export default function CentrelinkAssetsTest({
   const isHomeowner = profile.homeValue > 0;
   const thresholds = profile.hasSpouse
     ? isHomeowner
-      ? ASSETS_TEST_THRESHOLDS_2024_25.couple_homeowner
-      : ASSETS_TEST_THRESHOLDS_2024_25.couple_non_homeowner
+      ? ASSETS_TEST_THRESHOLDS_2024_25.coupleHomeowner
+      : ASSETS_TEST_THRESHOLDS_2024_25.coupleNonHomeowner
     : isHomeowner
-    ? ASSETS_TEST_THRESHOLDS_2024_25.single_homeowner
-    : ASSETS_TEST_THRESHOLDS_2024_25.single_non_homeowner;
+    ? ASSETS_TEST_THRESHOLDS_2024_25.singleHomeowner
+    : ASSETS_TEST_THRESHOLDS_2024_25.singleNonHomeowner;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
