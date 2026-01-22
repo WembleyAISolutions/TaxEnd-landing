@@ -142,6 +142,7 @@ export default function RetireeDashboard() {
 
       {showEstatePlanning && (
         <EstatePlanningSection
+          profile={dashboard.profile}
           items={dashboard.estatePlanningItems}
           onClose={() => setShowEstatePlanning(false)}
           onUpdateItem={dashboard.updateEstatePlanningItem}
