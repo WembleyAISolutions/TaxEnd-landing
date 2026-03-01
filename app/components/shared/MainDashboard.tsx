@@ -5,9 +5,9 @@ import { AgeGroup } from '../../types/australian-tax';
 import AgeSelector from './AgeSelector';
 import YoungProfessionalDashboard from '../age-dashboards/YoungProfessionalDashboard';
 import ProfessionalDashboard from '../age-dashboards/ProfessionalDashboard';
-import { EstablishedProfessionalDashboard } from '../../../src/components/dashboard/established-professional';
-import { SeniorProfessionalDashboard } from '../../../src/components/dashboard/senior-professional';
-import { RetireeDashboard } from '../../../src/components/dashboard/retiree';
+import EstablishedProfessionalDashboard from '../age-dashboards/EstablishedProfessionalDashboard';
+import SeniorProfessionalDashboard from '../age-dashboards/SeniorProfessionalDashboard';
+import RetireeDashboard from '../age-dashboards/RetireeDashboard';
 
 interface MainDashboardProps {
   className?: string;
