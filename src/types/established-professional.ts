@@ -131,7 +131,7 @@ export interface AISuggestion {
 
 // Task Item
 export type TaskPriority = 'high' | 'medium' | 'low';
-export type TaskCategory = 'review' | 'document' | 'calculation' | 'consultation' | 'filing';
+export type TaskCategory = 'review' | 'document' | 'calculation' | 'consultation' | 'filing' | 'compliance' | 'optimization' | 'planning';
 
 export interface TaskItem {
   id: string;
